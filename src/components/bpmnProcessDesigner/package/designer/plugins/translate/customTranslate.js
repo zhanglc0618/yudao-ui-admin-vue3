@@ -1,42 +1,30 @@
-// import translations from "./zh";
-//
-// export default function customTranslate(template, replacements) {
-//   replacements = replacements || {};
-//
-//   // Translate
-//   template = translations[template] || template;
-//
-//   // Replace
-//   return template.replace(/{([^}]+)}/g, function(_, key) {
-//     let str = replacements[key];
-//     if (
-//       translations[replacements[key]] !== null &&
-//       translations[replacements[key]] !== "undefined"
-//     ) {
-//       // eslint-disable-next-line no-mixed-spaces-and-tabs
-//       str = translations[replacements[key]];
-//       // eslint-disable-next-line no-mixed-spaces-and-tabs
-//     }
-//     return str || "{" + key + "}";
-//   });
-// }
+const buildKeyMap = (translations) => {
+  const map = new Map()
+  Object.keys(translations || {}).forEach((key) => {
+    map.set(key.toLowerCase(), key)
+  })
+  return map
+}
 
-export default function customTranslate(translations) {
-  return function (template, replacements) {
-    replacements = replacements || {};
-    // 将模板和翻译字典的键统一转换为小写进行匹配
-    const lowerTemplate = template.toLowerCase();
-    const translation = Object.keys(translations).find(key => key.toLowerCase() === lowerTemplate);
+export default function customTranslate(translations = {}) {
+  const keyMap = buildKeyMap(translations)
 
-    // 如果找到匹配的翻译，使用翻译后的模板
-    if (translation) {
-      template = translations[translation];
-    }
+  const resolveTranslation = (value) => {
+    if (typeof value !== 'string') return value
+    const hit = keyMap.get(value.toLowerCase())
+    return hit ? translations[hit] : value
+  }
 
-    // 替换模板中的占位符
-    return template.replace(/{([^}]+)}/g, function (_, key) {
-      // 如果替换值存在，返回替换值；否则返回原始占位符
-      return replacements[key] !== undefined ? replacements[key] : `{${key}}`;
-    });
-  };
+  return function (template = '', replacements = {}) {
+    const templateKey = keyMap.get(String(template).toLowerCase())
+    const localizedTemplate = templateKey ? translations[templateKey] : template
+
+    return localizedTemplate.replace(/{([^}]+)}/g, (_, key) => {
+      const raw = replacements[key]
+      if (raw === undefined || raw === null) {
+        return `{${key}}`
+      }
+      return resolveTranslation(raw)
+    })
+  }
 }

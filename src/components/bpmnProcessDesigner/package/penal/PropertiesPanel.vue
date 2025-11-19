@@ -65,7 +65,7 @@
         />
       </el-collapse-item>
       <!-- 新增的时间事件配置项 -->
-      <el-collapse-item v-if="elementType === 'IntermediateCatchEvent'" name="timeEvent">
+      <el-collapse-item v-if="isTimerIntermediateCatchEvent" name="timeEvent">
         <template #title><Icon icon="ep:timer" />时间事件</template>
         <TimeEventConfig :businessObject="elementBusinessObject" :key="elementId" />
       </el-collapse-item>
@@ -85,7 +85,7 @@ import ElementProperties from './properties/ElementProperties.vue'
 import UserTaskListeners from './listeners/UserTaskListeners.vue'
 import { getTaskCollapseItemName, isTaskCollapseItemShow } from './task/data'
 import TimeEventConfig from './time-event-config/TimeEventConfig.vue'
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 
 defineOptions({ name: 'MyPropertiesPanel' })
 
@@ -126,6 +126,18 @@ const isReady = ref(false)
 
 provide('prefix', props.prefix)
 provide('width', props.width)
+
+// 判断是否为定时器中间捕获事件（排除消息和信号事件）
+const isTimerIntermediateCatchEvent = computed(() => {
+  if (elementType.value !== 'IntermediateCatchEvent') return false
+
+  const eventDefinitions = elementBusinessObject.value?.eventDefinitions
+  if (!eventDefinitions || eventDefinitions.length === 0) return false
+
+  const eventDefType = eventDefinitions[0]?.$type
+  // 只显示定时器事件，排除消息和信号事件
+  return eventDefType === 'bpmn:TimerEventDefinition'
+})
 
 // 初始化 bpmnInstances
 const initBpmnInstances = () => {

@@ -14,6 +14,33 @@
           :model="model"
         />
       </el-collapse-item>
+      <!-- 时间事件配置 - 排在常规之后的第二栏 -->
+      <el-collapse-item v-if="isTimerIntermediateCatchEvent" name="timeEvent" key="timeEvent">
+        <template #title><Icon icon="ep:timer" />时间事件</template>
+        <TimeEventConfig :businessObject="elementBusinessObject" :key="elementId" />
+      </el-collapse-item>
+      <!-- 消息属性配置 - 排在常规之后的第二栏 -->
+      <el-collapse-item
+        v-if="isMessageIntermediateCatchEvent"
+        name="messageEvent"
+        key="messageEvent"
+      >
+        <template #title><Icon icon="ep:message" />消息事件</template>
+        <MessageEventConfig
+          :id="elementId"
+          :type="elementType"
+          :business-object="elementBusinessObject"
+        />
+      </el-collapse-item>
+      <!-- 信号属性配置 - 排在常规之后的第二栏 -->
+      <el-collapse-item v-if="isSignalIntermediateCatchEvent" name="signalEvent" key="signalEvent">
+        <template #title><Icon icon="ep:notification" />信号事件</template>
+        <SignalEventConfig
+          :id="elementId"
+          :type="elementType"
+          :business-object="elementBusinessObject"
+        />
+      </el-collapse-item>
       <el-collapse-item name="condition" v-if="elementType === 'Process'" key="message">
         <template #title><Icon icon="ep:comment" />消息与信号</template>
         <signal-and-massage />
@@ -64,11 +91,6 @@
           :business-object="elementBusinessObject"
         />
       </el-collapse-item>
-      <!-- 新增的时间事件配置项 -->
-      <el-collapse-item v-if="isTimerIntermediateCatchEvent" name="timeEvent">
-        <template #title><Icon icon="ep:timer" />时间事件</template>
-        <TimeEventConfig :businessObject="elementBusinessObject" :key="elementId" />
-      </el-collapse-item>
     </el-collapse>
   </div>
 </template>
@@ -85,6 +107,8 @@ import ElementProperties from './properties/ElementProperties.vue'
 import UserTaskListeners from './listeners/UserTaskListeners.vue'
 import { getTaskCollapseItemName, isTaskCollapseItemShow } from './task/data'
 import TimeEventConfig from './time-event-config/TimeEventConfig.vue'
+import MessageEventConfig from './message-event/MessageEventConfig.vue'
+import SignalEventConfig from './signal-event/SignalEventConfig.vue'
 import { ref, watch, computed } from 'vue'
 
 defineOptions({ name: 'MyPropertiesPanel' })
@@ -137,6 +161,28 @@ const isTimerIntermediateCatchEvent = computed(() => {
   const eventDefType = eventDefinitions[0]?.$type
   // 只显示定时器事件，排除消息和信号事件
   return eventDefType === 'bpmn:TimerEventDefinition'
+})
+
+// 判断是否为消息中间捕获事件
+const isMessageIntermediateCatchEvent = computed(() => {
+  if (elementType.value !== 'IntermediateCatchEvent') return false
+
+  const eventDefinitions = elementBusinessObject.value?.eventDefinitions
+  if (!eventDefinitions || eventDefinitions.length === 0) return false
+
+  const eventDefType = eventDefinitions[0]?.$type
+  return eventDefType === 'bpmn:MessageEventDefinition'
+})
+
+// 判断是否为信号中间捕获事件
+const isSignalIntermediateCatchEvent = computed(() => {
+  if (elementType.value !== 'IntermediateCatchEvent') return false
+
+  const eventDefinitions = elementBusinessObject.value?.eventDefinitions
+  if (!eventDefinitions || eventDefinitions.length === 0) return false
+
+  const eventDefType = eventDefinitions[0]?.$type
+  return eventDefType === 'bpmn:SignalEventDefinition'
 })
 
 // 初始化 bpmnInstances

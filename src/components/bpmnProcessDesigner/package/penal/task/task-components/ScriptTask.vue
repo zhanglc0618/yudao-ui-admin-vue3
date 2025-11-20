@@ -1,12 +1,11 @@
 <template>
   <div style="margin-top: 16px">
     <el-form-item label="脚本格式">
-      <el-input
-        v-model="scriptTaskForm.scriptFormat"
-        clearable
-        @input="updateElementTask()"
-        @change="updateElementTask()"
-      />
+      <el-radio-group v-model="scriptTaskForm.scriptFormat" @change="updateElementTask()">
+        <el-radio-button label="groovy">Groovy</el-radio-button>
+        <el-radio-button label="JavaScript">JavaScript</el-radio-button>
+        <el-radio-button label="juel">juel</el-radio-button>
+      </el-radio-group>
     </el-form-item>
     <el-form-item label="脚本类型">
       <el-select v-model="scriptTaskForm.scriptType">

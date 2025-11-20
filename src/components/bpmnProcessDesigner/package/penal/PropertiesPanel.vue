@@ -64,10 +64,11 @@
             <template #title><Icon icon="ep:promotion" />流转条件</template>
             <flow-condition :business-object="elementBusinessObject" :type="elementType" />
           </el-collapse-item>
-          <el-collapse-item name="condition" v-if="formVisible" key="form">
-            <template #title><Icon icon="ep:list" />表单</template>
-            <element-form :id="elementId" :type="elementType" />
-          </el-collapse-item>
+          <!-- 表单配置已隐藏 -->
+          <!-- <el-collapse-item name="condition" v-if="formVisible" key="form">
+          <template #title><Icon icon="ep:list" />表单</template>
+          <element-form :id="elementId" :type="elementType" />
+        </el-collapse-item> -->
           <el-collapse-item name="task" v-if="isTaskCollapseItemShow(elementType)" key="task">
             <template #title
               ><Icon icon="ep:checked" />{{ getTaskCollapseItemName(elementType) }}</template

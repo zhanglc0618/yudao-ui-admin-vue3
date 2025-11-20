@@ -2,17 +2,17 @@
   <div class="panel-tab__content">
     <el-form :model="flowConditionForm" label-width="90px" size="small">
       <el-form-item label="流转类型">
-        <el-select v-model="flowConditionForm.type" @change="updateFlowType">
-          <el-option label="普通流转路径" value="normal" />
-          <el-option label="默认流转路径" value="default" />
-          <el-option label="条件流转路径" value="condition" />
-        </el-select>
+        <el-radio-group v-model="flowConditionForm.type" @change="updateFlowType">
+          <el-radio-button label="normal">普通流转路径</el-radio-button>
+          <el-radio-button label="default">默认流转路径</el-radio-button>
+          <el-radio-button label="condition">条件流转路径</el-radio-button>
+        </el-radio-group>
       </el-form-item>
       <el-form-item label="条件格式" v-if="flowConditionForm.type === 'condition'" key="condition">
-        <el-select v-model="flowConditionForm.conditionType">
-          <el-option label="表达式" value="expression" />
-          <el-option label="脚本" value="script" />
-        </el-select>
+        <el-radio-group v-model="flowConditionForm.conditionType">
+          <el-radio-button label="expression">表达式</el-radio-button>
+          <el-radio-button label="script">脚本</el-radio-button>
+        </el-radio-group>
       </el-form-item>
       <el-form-item
         label="表达式"
@@ -25,13 +25,17 @@
         v-if="flowConditionForm.conditionType && flowConditionForm.conditionType === 'script'"
       >
         <el-form-item label="脚本语言" key="language">
-          <el-input v-model="flowConditionForm.language" clearable @change="updateFlowCondition" />
+          <el-radio-group v-model="flowConditionForm.language" @change="updateFlowCondition">
+            <el-radio-button label="groovy">Groovy</el-radio-button>
+            <el-radio-button label="JavaScript">JavaScript</el-radio-button>
+            <el-radio-button label="juel">juel</el-radio-button>
+          </el-radio-group>
         </el-form-item>
         <el-form-item label="脚本类型" key="scriptType">
-          <el-select v-model="flowConditionForm.scriptType">
-            <el-option label="内联脚本" value="inlineScript" />
-            <el-option label="外部脚本" value="externalScript" />
-          </el-select>
+          <el-radio-group v-model="flowConditionForm.scriptType">
+            <el-radio-button label="inlineScript">内联脚本</el-radio-button>
+            <el-radio-button label="externalScript">外部脚本</el-radio-button>
+          </el-radio-group>
         </el-form-item>
         <el-form-item
           label="脚本"

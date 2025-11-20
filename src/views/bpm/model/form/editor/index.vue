@@ -115,14 +115,3 @@ onBeforeUnmount(() => {
   }
 })
 </script>
-<style lang="scss">
-.process-panel__container {
-  position: absolute;
-  top: 172px;
-  right: 70px;
-  bottom: 20px;
-  height: auto;
-  max-height: calc(100vh - 192px);
-  overflow-y: auto;
-}
-</style>

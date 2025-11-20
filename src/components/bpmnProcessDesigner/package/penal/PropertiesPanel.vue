@@ -1,97 +1,122 @@
 <template>
-  <div class="process-panel__container" :style="{ width: `${width}px` }">
-    <el-collapse v-model="activeTab" v-if="isReady">
-      <el-collapse-item name="base">
-        <!-- class="panel-tab__title" -->
-        <template #title>
-          <Icon icon="ep:info-filled" />
-          常规</template
-        >
-        <ElementBaseInfo
-          :id-edit-disabled="idEditDisabled"
-          :business-object="elementBusinessObject"
-          :type="elementType"
-          :model="model"
-        />
-      </el-collapse-item>
-      <!-- 时间事件配置 - 排在常规之后的第二栏 -->
-      <el-collapse-item v-if="isTimerIntermediateCatchEvent" name="timeEvent" key="timeEvent">
-        <template #title><Icon icon="ep:timer" />时间事件</template>
-        <TimeEventConfig :businessObject="elementBusinessObject" :key="elementId" />
-      </el-collapse-item>
-      <!-- 消息属性配置 - 排在常规之后的第二栏 -->
-      <el-collapse-item
-        v-if="isMessageIntermediateCatchEvent"
-        name="messageEvent"
-        key="messageEvent"
+  <div class="process-panel__wrapper">
+    <!-- 切换按钮 -->
+    <div class="panel-toggle-btn" @click="togglePanel">
+      <Icon :icon="isPanelVisible ? 'ep:d-arrow-right' : 'ep:d-arrow-left'" />
+    </div>
+    <!-- 属性面板 -->
+    <transition name="slide-fade">
+      <div
+        v-show="isPanelVisible"
+        class="process-panel__container"
+        :style="{ width: `${width}px` }"
       >
-        <template #title><Icon icon="ep:message" />消息事件</template>
-        <MessageEventConfig
-          :id="elementId"
-          :type="elementType"
-          :business-object="elementBusinessObject"
-        />
-      </el-collapse-item>
-      <!-- 信号属性配置 - 排在常规之后的第二栏 -->
-      <el-collapse-item v-if="isSignalIntermediateCatchEvent" name="signalEvent" key="signalEvent">
-        <template #title><Icon icon="ep:notification" />信号事件</template>
-        <SignalEventConfig
-          :id="elementId"
-          :type="elementType"
-          :business-object="elementBusinessObject"
-        />
-      </el-collapse-item>
-      <el-collapse-item name="condition" v-if="elementType === 'Process'" key="message">
-        <template #title><Icon icon="ep:comment" />消息与信号</template>
-        <signal-and-massage />
-      </el-collapse-item>
-      <el-collapse-item name="condition" v-if="conditionFormVisible" key="condition">
-        <template #title><Icon icon="ep:promotion" />流转条件</template>
-        <flow-condition :business-object="elementBusinessObject" :type="elementType" />
-      </el-collapse-item>
-      <el-collapse-item name="condition" v-if="formVisible" key="form">
-        <template #title><Icon icon="ep:list" />表单</template>
-        <element-form :id="elementId" :type="elementType" />
-      </el-collapse-item>
-      <el-collapse-item name="task" v-if="isTaskCollapseItemShow(elementType)" key="task">
-        <template #title
-          ><Icon icon="ep:checked" />{{ getTaskCollapseItemName(elementType) }}</template
-        >
-        <element-task :id="elementId" :type="elementType" />
-      </el-collapse-item>
-      <el-collapse-item name="multiInstance" v-if="elementType === 'UserTask'" key="multiInstance">
-        <template #title><Icon icon="ep:help-filled" />多人审批方式</template>
-        <element-multi-instance
-          :id="elementId"
-          :business-object="elementBusinessObject"
-          :type="elementType"
-        />
-      </el-collapse-item>
-      <el-collapse-item name="listeners" key="listeners">
-        <template #title><Icon icon="ep:bell-filled" />执行监听器</template>
-        <element-listeners :id="elementId" :type="elementType" />
-      </el-collapse-item>
-      <el-collapse-item name="taskListeners" v-if="elementType === 'UserTask'" key="taskListeners">
-        <template #title><Icon icon="ep:bell-filled" />任务监听器</template>
-        <user-task-listeners :id="elementId" :type="elementType" />
-      </el-collapse-item>
-      <el-collapse-item name="extensions" key="extensions">
-        <template #title><Icon icon="ep:circle-plus-filled" />扩展属性</template>
-        <element-properties :id="elementId" :type="elementType" />
-      </el-collapse-item>
-      <el-collapse-item name="other" key="other">
-        <template #title><Icon icon="ep:promotion" />其他</template>
-        <element-other-config :id="elementId" />
-      </el-collapse-item>
-      <el-collapse-item name="customConfig" key="customConfig">
-        <template #title><Icon icon="ep:tools" />自定义配置</template>
-        <element-custom-config
-          :id="elementId"
-          :type="elementType"
-          :business-object="elementBusinessObject"
-        />
-      </el-collapse-item>
-    </el-collapse>
+        <el-collapse v-model="activeTab" v-if="isReady">
+          <el-collapse-item name="base">
+            <!-- class="panel-tab__title" -->
+            <template #title>
+              <Icon icon="ep:info-filled" />
+              常规</template
+            >
+            <ElementBaseInfo
+              :id-edit-disabled="idEditDisabled"
+              :business-object="elementBusinessObject"
+              :type="elementType"
+              :model="model"
+            />
+          </el-collapse-item>
+          <!-- 时间事件配置 - 排在常规之后的第二栏 -->
+          <el-collapse-item v-if="isTimerIntermediateCatchEvent" name="timeEvent" key="timeEvent">
+            <template #title><Icon icon="ep:timer" />时间事件</template>
+            <TimeEventConfig :businessObject="elementBusinessObject" :key="elementId" />
+          </el-collapse-item>
+          <!-- 消息属性配置 - 排在常规之后的第二栏 -->
+          <el-collapse-item
+            v-if="isMessageIntermediateCatchEvent"
+            name="messageEvent"
+            key="messageEvent"
+          >
+            <template #title><Icon icon="ep:message" />消息事件</template>
+            <MessageEventConfig
+              :id="elementId"
+              :type="elementType"
+              :business-object="elementBusinessObject"
+            />
+          </el-collapse-item>
+          <!-- 信号属性配置 - 排在常规之后的第二栏 -->
+          <el-collapse-item
+            v-if="isSignalIntermediateCatchEvent"
+            name="signalEvent"
+            key="signalEvent"
+          >
+            <template #title><Icon icon="ep:notification" />信号事件</template>
+            <SignalEventConfig
+              :id="elementId"
+              :type="elementType"
+              :business-object="elementBusinessObject"
+            />
+          </el-collapse-item>
+          <el-collapse-item name="condition" v-if="elementType === 'Process'" key="message">
+            <template #title><Icon icon="ep:comment" />消息与信号</template>
+            <signal-and-massage />
+          </el-collapse-item>
+          <el-collapse-item name="condition" v-if="conditionFormVisible" key="condition">
+            <template #title><Icon icon="ep:promotion" />流转条件</template>
+            <flow-condition :business-object="elementBusinessObject" :type="elementType" />
+          </el-collapse-item>
+          <el-collapse-item name="condition" v-if="formVisible" key="form">
+            <template #title><Icon icon="ep:list" />表单</template>
+            <element-form :id="elementId" :type="elementType" />
+          </el-collapse-item>
+          <el-collapse-item name="task" v-if="isTaskCollapseItemShow(elementType)" key="task">
+            <template #title
+              ><Icon icon="ep:checked" />{{ getTaskCollapseItemName(elementType) }}</template
+            >
+            <element-task :id="elementId" :type="elementType" />
+          </el-collapse-item>
+          <el-collapse-item
+            name="multiInstance"
+            v-if="elementType === 'UserTask'"
+            key="multiInstance"
+          >
+            <template #title><Icon icon="ep:help-filled" />多人审批方式</template>
+            <element-multi-instance
+              :id="elementId"
+              :business-object="elementBusinessObject"
+              :type="elementType"
+            />
+          </el-collapse-item>
+          <el-collapse-item name="listeners" key="listeners">
+            <template #title><Icon icon="ep:bell-filled" />执行监听器</template>
+            <element-listeners :id="elementId" :type="elementType" />
+          </el-collapse-item>
+          <el-collapse-item
+            name="taskListeners"
+            v-if="elementType === 'UserTask'"
+            key="taskListeners"
+          >
+            <template #title><Icon icon="ep:bell-filled" />任务监听器</template>
+            <user-task-listeners :id="elementId" :type="elementType" />
+          </el-collapse-item>
+          <el-collapse-item name="extensions" key="extensions">
+            <template #title><Icon icon="ep:circle-plus-filled" />扩展属性</template>
+            <element-properties :id="elementId" :type="elementType" />
+          </el-collapse-item>
+          <el-collapse-item name="other" key="other">
+            <template #title><Icon icon="ep:promotion" />其他</template>
+            <element-other-config :id="elementId" />
+          </el-collapse-item>
+          <el-collapse-item name="customConfig" key="customConfig">
+            <template #title><Icon icon="ep:tools" />自定义配置</template>
+            <element-custom-config
+              :id="elementId"
+              :type="elementType"
+              :business-object="elementBusinessObject"
+            />
+          </el-collapse-item>
+        </el-collapse>
+      </div>
+    </transition>
   </div>
 </template>
 <script lang="ts" setup>
@@ -142,14 +167,20 @@ const props = defineProps({
 const activeTab = ref('base')
 const elementId = ref('')
 const elementType = ref('')
-const elementBusinessObject = ref<any>({}) // 元素 businessObject 镜像，提供给需要做判断的组件使用
+const elementBusinessObject = ref<any>({}) // 元素 businessObject 镜像,提供给需要做判断的组件使用
 const conditionFormVisible = ref(false) // 流转条件设置
 const formVisible = ref(false) // 表单配置
 const bpmnElement = ref()
 const isReady = ref(false)
+const isPanelVisible = ref(false) // 属性面板默认隐藏
 
 provide('prefix', props.prefix)
 provide('width', props.width)
+
+// 切换属性面板显示/隐藏
+const togglePanel = () => {
+  isPanelVisible.value = !isPanelVisible.value
+}
 
 // 判断是否为定时器中间捕获事件（排除消息和信号事件）
 const isTimerIntermediateCatchEvent = computed(() => {
@@ -297,6 +328,11 @@ const initFormOnChanged = (element) => {
       activatedElement.source.type.indexOf('StartEvent') === -1
     )
     formVisible.value = elementType.value === 'UserTask' || elementType.value === 'StartEvent'
+
+    // 当选中元素时自动展开属性面板（用户主动选择的元素才展开）
+    if (element) {
+      isPanelVisible.value = true
+    }
   } catch (error) {
     console.error('初始化表单数据失败:', error)
   }
@@ -317,9 +353,66 @@ watch(
 </script>
 
 <style lang="scss" scoped>
+.process-panel__wrapper {
+  position: fixed;
+  top: 172px;
+  right: 0;
+  bottom: 20px;
+  height: auto;
+  max-height: calc(100vh - 192px);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+}
+
+.panel-toggle-btn {
+  position: absolute;
+  left: -32px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 80px;
+  background-color: #d3d3d3;
+  border-radius: 4px 0 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s ease;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    background-color: #b8b8b8;
+    left: -34px;
+  }
+
+  :deep(.icon) {
+    color: #fff;
+    font-size: 18px;
+  }
+}
+
+// 过渡动画
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: all 0.3s ease;
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
 .process-panel__container {
   padding: 0;
   overflow-x: hidden;
+  background-color: #fff;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+  border-radius: 4px 0 0 4px;
+  height: 100%;
+  max-height: calc(100vh - 192px);
 
   // 自定义滚动条样式
   &::-webkit-scrollbar {

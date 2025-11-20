@@ -5,6 +5,27 @@
   background: var(--palette-background-color);
   border: solid 1px var(--palette-border-color) !important;
   border-radius: 2px;
+  left: 0 !important;
+}
+
+// Token Simulation 面板靠最左
+.bts-container {
+  left: 0 !important;
+}
+
+// Token Simulation 控制面板靠最左
+.bts-control {
+  left: 0 !important;
+}
+
+// Token Simulation 切换按钮靠最左
+.toggle-mode {
+  left: 0 !important;
+}
+
+// Token Simulation 所有相关面板靠最左
+[class*="bts-"] {
+  left: 0 !important;
 }
 
 .my-process-designer {

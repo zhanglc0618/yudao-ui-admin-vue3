@@ -2,6 +2,7 @@ import request from '@/config/axios'
 import { isEmpty } from '@/utils/is'
 import { ApiSelectProps } from '@/components/FormCreate/src/type'
 import { jsonParse } from '@/utils'
+import { useUserStoreWithOut } from '@/store/modules/user'
 
 export const useApiSelect = (option: ApiSelectProps) => {
   return defineComponent({
@@ -61,6 +62,11 @@ export const useApiSelect = (option: ApiSelectProps) => {
       returnType: {
         type: String,
         default: 'id'
+      },
+      // 只展示当前登录用户（用于用户选择器）
+      onlyShowSelf: {
+        type: Boolean,
+        default: false
       }
     },
     setup(props) {
@@ -124,7 +130,18 @@ export const useApiSelect = (option: ApiSelectProps) => {
 
       function parseOptions0(data: any[]) {
         if (Array.isArray(data)) {
-          options.value = data.map((item: any) => {
+          // 如果开启了"只展示当前登录用户"，则过滤数据只保留当前登录用户
+          let filteredData = data
+          if (props.onlyShowSelf) {
+            const userStore = useUserStoreWithOut()
+            const currentUserId = userStore.getUser.id
+            filteredData = data.filter((item: any) => {
+              const itemId = parseExpression(item, props.valueField)
+              return itemId === currentUserId
+            })
+          }
+
+          options.value = filteredData.map((item: any) => {
             const label = parseExpression(item, props.labelField)
             let value = parseExpression(item, props.valueField)
 
@@ -139,6 +156,18 @@ export const useApiSelect = (option: ApiSelectProps) => {
               value: value
             }
           })
+
+          // 如果开启了"只展示当前登录用户"，且选项列表不为空，自动设置默认值
+          if (props.onlyShowSelf && options.value.length > 0) {
+            nextTick(() => {
+              // 使用 attrs 中的 modelValue 更新函数来设置默认值
+              const updateModelValue = (attrs as any)['onUpdate:modelValue']
+              if (updateModelValue && typeof updateModelValue === 'function') {
+                updateModelValue(options.value[0].value)
+              }
+            })
+          }
+
           return
         }
         console.warn(`接口[${props.url}] 返回结果不是一个数组`)

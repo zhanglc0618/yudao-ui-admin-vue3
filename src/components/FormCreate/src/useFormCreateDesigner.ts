@@ -77,7 +77,15 @@ export const useFormCreateDesigner = async (designer: Ref) => {
   const userSelectRule = useSelectRule({
     name: 'UserSelect',
     label: '用户选择器',
-    icon: 'icon-user-o'
+    icon: 'icon-user-o',
+    props: [
+      {
+        type: 'switch',
+        field: 'onlyShowSelf',
+        title: '只展示当前登录用户',
+        value: false
+      }
+    ]
   })
   const deptSelectRule = useSelectRule({
     name: 'DeptSelect',

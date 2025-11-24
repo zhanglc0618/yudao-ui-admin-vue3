@@ -41,7 +41,14 @@ export const useFormCreateDesigner = async (designer: Ref) => {
     designer.value?.removeMenuItem('upload')
     // 移除自带的富文本组件规则，使用 editorRule 替代
     designer.value?.removeMenuItem('fcEditor')
-    const components = [editorRule, uploadFileRule, uploadImgRule, uploadImgsRule, downloadRule, excelImportRule]
+    const components = [
+      editorRule,
+      uploadFileRule,
+      uploadImgRule,
+      uploadImgsRule,
+      downloadRule,
+      excelImportRule
+    ]
     components.forEach((component) => {
       // 插入组件规则
       designer.value?.addComponent(component)
@@ -74,7 +81,19 @@ export const useFormCreateDesigner = async (designer: Ref) => {
   const deptSelectRule = useSelectRule({
     name: 'DeptSelect',
     label: '部门选择器',
-    icon: 'icon-address-card-o'
+    icon: 'icon-address-card-o',
+    props: [
+      {
+        type: 'select',
+        field: 'returnType',
+        title: '返回值类型',
+        value: 'id',
+        options: [
+          { label: '部门ID', value: 'id' },
+          { label: '部门名称', value: 'name' }
+        ]
+      }
+    ]
   })
   const dictSelectRule = useDictSelectRule()
   const apiSelectRule0 = useSelectRule({

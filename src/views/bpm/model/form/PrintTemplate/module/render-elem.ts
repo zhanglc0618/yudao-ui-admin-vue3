@@ -1,5 +1,5 @@
 import { h, VNode } from 'snabbdom'
-import { DomEditor, IDomEditor, SlateElement } from '@wangeditor-next/editor'
+import { DomEditor, IDomEditor, SlateElement } from '@wangeditor/editor'
 
 function renderProcessRecord(
   elem: SlateElement,

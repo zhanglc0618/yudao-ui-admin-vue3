@@ -186,9 +186,7 @@ const removeNews = async (index: number) => {
     if (activeNewsIndex.value === index) {
       activeNewsIndex.value = 0
     }
-  } catch {
-    // empty
-  }
+  } catch {}
 }
 
 // 添加一个图文

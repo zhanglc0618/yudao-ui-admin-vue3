@@ -121,7 +121,7 @@ const loadMore = () => {
 
 const getPage = async (page: any, params: any = null) => {
   loading.value = true
-  const dataTemp = await getMessagePage(
+  let dataTemp = await getMessagePage(
     Object.assign(
       {
         pageNo: page.pageNo,

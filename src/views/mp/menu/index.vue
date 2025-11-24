@@ -217,9 +217,7 @@ const onDeleteMenu = async () => {
     activeMenu.value = {}
     showRightPanel.value = false
     activeIndex.value = MENU_NOT_SELECTED
-  } catch {
-    //
-  }
+  } catch {}
 }
 
 // ======================== 菜单编辑 ========================
@@ -269,7 +267,7 @@ const menuListToBackend = () => {
 // 将前端的 menu，转换成后端接收的 menu
 // TODO: @芋艿，需要根据后台API删除不需要的字段
 const menuToBackend = (menu: any) => {
-  const result = {
+  let result = {
     ...menu,
     children: undefined, // 不处理子节点
     reply: undefined // 稍后复制

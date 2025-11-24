@@ -1,4 +1,4 @@
-import { SlateDescendant } from '@wangeditor-next/editor'
+import { SlateDescendant } from '@wangeditor/editor'
 
 declare module 'slate' {
   interface CustomTypes {

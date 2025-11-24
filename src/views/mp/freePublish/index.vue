@@ -97,9 +97,7 @@ const handleDelete = async (item: any) => {
     message.success(t('common.delSuccess'))
     // 刷新列表
     await getList()
-  } catch {
-    //
-  }
+  } catch {}
 }
 </script>
 <style lang="scss" scoped>

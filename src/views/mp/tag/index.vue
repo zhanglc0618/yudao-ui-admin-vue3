@@ -139,9 +139,7 @@ const handleDelete = async (id: number) => {
     message.success(t('common.delSuccess'))
     // 刷新列表
     await getList()
-  } catch {
-    //
-  }
+  } catch {}
 }
 
 /** 同步操作 */
@@ -151,8 +149,6 @@ const handleSync = async () => {
     await MpTagApi.syncTag(queryParams.accountId as number)
     message.success('同步标签成功')
     await getList()
-  } catch {
-    //
-  }
+  } catch {}
 }
 </script>

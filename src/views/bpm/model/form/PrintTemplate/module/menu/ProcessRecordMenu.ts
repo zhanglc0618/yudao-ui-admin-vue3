@@ -1,4 +1,4 @@
-import { IButtonMenu, IDomEditor } from '@wangeditor-next/editor'
+import { IButtonMenu, IDomEditor } from '@wangeditor/editor'
 
 class ProcessRecordMenu implements IButtonMenu {
   readonly tag: string

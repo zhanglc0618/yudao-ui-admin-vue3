@@ -1,5 +1,5 @@
 <template>
-  <div class="process-panel__container" :style="{ width: `${width}px`, maxHeight: '600px' }">
+  <div class="process-panel__wrapper">
     <!-- 切换按钮 -->
     <div class="panel-toggle-btn" @click="togglePanel">
       <Icon :icon="isPanelVisible ? 'ep:d-arrow-right' : 'ep:d-arrow-left'" />
@@ -168,15 +168,13 @@ const props = defineProps({
 const activeTab = ref('base')
 const elementId = ref('')
 const elementType = ref('')
-const elementBusinessObject = ref<any>({}) // 元素 businessObject 镜像，提供给需要做判断的组件使用
+const elementBusinessObject = ref<any>({}) // 元素 businessObject 镜像,提供给需要做判断的组件使用
 const conditionFormVisible = ref(false) // 流转条件设置
 const formVisible = ref(false) // 表单配置
 const bpmnElement = ref()
 const isReady = ref(false)
 const isPanelVisible = ref(false) // 属性面板默认隐藏
 
-const type = ref('time')
-const condition = ref('')
 provide('prefix', props.prefix)
 provide('width', props.width)
 
@@ -252,17 +250,15 @@ const initBpmnInstances = () => {
 const bpmnInstances = () => (window as any)?.bpmnInstances
 
 // 监听 props.bpmnModeler 然后 initModels
-const unwatchBpmn = watch(
+watch(
   () => props.bpmnModeler,
   async () => {
-    // 避免加载时 流程图 并未加载完成
     if (!props.bpmnModeler) {
       console.log('缺少props.bpmnModeler')
       return
     }
 
     try {
-      // 等待 modeler 初始化完成
       await nextTick()
       if (initBpmnInstances()) {
         isReady.value = true
@@ -355,51 +351,6 @@ watch(
     activeTab.value = 'base'
   }
 )
-
-function updateNode() {
-  const moddle = window.bpmnInstances?.moddle
-  const modeling = window.bpmnInstances?.modeling
-  const elementRegistry = window.bpmnInstances?.elementRegistry
-  if (!moddle || !modeling || !elementRegistry) return
-
-  const element = elementRegistry.get(props.businessObject.id)
-  if (!element) return
-
-  let timerDef = moddle.create('bpmn:TimerEventDefinition', {})
-  if (type.value === 'time') {
-    timerDef.timeDate = moddle.create('bpmn:FormalExpression', { body: condition.value })
-  } else if (type.value === 'duration') {
-    timerDef.timeDuration = moddle.create('bpmn:FormalExpression', { body: condition.value })
-  } else if (type.value === 'cycle') {
-    timerDef.timeCycle = moddle.create('bpmn:FormalExpression', { body: condition.value })
-  }
-
-  modeling.updateModdleProperties(element, element.businessObject, {
-    eventDefinitions: [timerDef]
-  })
-}
-
-// 初始化和监听
-function syncFromBusinessObject() {
-  if (props.businessObject) {
-    const timerDef = (props.businessObject.eventDefinitions || [])[0]
-    if (timerDef) {
-      if (timerDef.timeDate) {
-        type.value = 'time'
-        condition.value = timerDef.timeDate.body
-      } else if (timerDef.timeDuration) {
-        type.value = 'duration'
-        condition.value = timerDef.timeDuration.body
-      } else if (timerDef.timeCycle) {
-        type.value = 'cycle'
-        condition.value = timerDef.timeCycle.body
-      }
-    }
-  }
-}
-onMounted(syncFromBusinessObject)
-watch(() => props.businessObject, syncFromBusinessObject, { deep: true })
-
 </script>
 
 <style lang="scss" scoped>

@@ -1,5 +1,5 @@
-import unique from '@form-create/utils/lib/unique'
 import { localeProps } from '@/components/FormCreate/src/utils'
+import { generateUUID } from '@/utils'
 
 export const useTableFormProRule = () => {
   const label = '表格表单pro'
@@ -53,7 +53,7 @@ export const useTableFormProRule = () => {
     rule({ t }: any) {
       return {
         type: name,
-        field: unique(),
+        field: generateUUID(),
         title: t('com.tableForm.name'),
         info: '',
         props: {
@@ -71,7 +71,12 @@ export const useTableFormProRule = () => {
         { type: 'switch', field: 'deletable', value: true, title: '允许删除' },
         { type: 'switch', field: 'filterEmptyColumn', value: true, title: '是否过滤空行的数据' },
         { type: 'inputNumber', field: 'min', props: { min: 0 }, title: '最少添加几行' },
-        { type: 'inputNumber', field: 'max', props: { min: 0 }, title: '最多添加几行，为 0 则不限制' }
+        {
+          type: 'inputNumber',
+          field: 'max',
+          props: { min: 0 },
+          title: '最多添加几行，为 0 则不限制'
+        }
       ])
       // 追加分页相关属性，显式标题
       base.push(

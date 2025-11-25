@@ -63,8 +63,13 @@ export const useApiSelect = (option: ApiSelectProps) => {
         type: String,
         default: 'id'
       },
-      // 只展示当前登录用户（用于用户选择器）
+      // 只显示发起人（用于用户选择器）
       onlyShowSelf: {
+        type: Boolean,
+        default: false
+      },
+      // 只显示发起人部门（用于部门选择器）
+      onlyShowStarterDept: {
         type: Boolean,
         default: false
       }
@@ -130,7 +135,7 @@ export const useApiSelect = (option: ApiSelectProps) => {
 
       function parseOptions0(data: any[]) {
         if (Array.isArray(data)) {
-          // 如果开启了"只展示当前登录用户"，则过滤数据只保留当前登录用户
+          // 如果开启了"只显示发起人"，则过滤数据只保留当前登录用户
           let filteredData = data
           if (props.onlyShowSelf) {
             const userStore = useUserStoreWithOut()
@@ -138,6 +143,16 @@ export const useApiSelect = (option: ApiSelectProps) => {
             filteredData = data.filter((item: any) => {
               const itemId = parseExpression(item, props.valueField)
               return itemId === currentUserId
+            })
+          }
+
+          // 如果开启了"只显示发起人部门"，则过滤数据只保留当前登录用户的部门
+          if (props.onlyShowStarterDept) {
+            const userStore = useUserStoreWithOut()
+            const currentUserDeptId = userStore.getUser.deptId
+            filteredData = data.filter((item: any) => {
+              const itemId = parseExpression(item, props.valueField)
+              return itemId === currentUserDeptId
             })
           }
 
@@ -157,8 +172,8 @@ export const useApiSelect = (option: ApiSelectProps) => {
             }
           })
 
-          // 如果开启了"只展示当前登录用户"，且选项列表不为空，自动设置默认值
-          if (props.onlyShowSelf && options.value.length > 0) {
+          // 如果开启了"只显示发起人"或"只显示发起人部门"，且选项列表不为空，自动设置默认值
+          if ((props.onlyShowSelf || props.onlyShowStarterDept) && options.value.length > 0) {
             nextTick(() => {
               // 使用 attrs 中的 modelValue 更新函数来设置默认值
               const updateModelValue = (attrs as any)['onUpdate:modelValue']

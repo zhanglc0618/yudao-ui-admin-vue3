@@ -82,7 +82,7 @@ export const useFormCreateDesigner = async (designer: Ref) => {
       {
         type: 'switch',
         field: 'onlyShowSelf',
-        title: '只展示当前登录用户',
+        title: '只显示发起人',
         value: false
       }
     ]
@@ -101,6 +101,12 @@ export const useFormCreateDesigner = async (designer: Ref) => {
           { label: '部门ID', value: 'id' },
           { label: '部门名称', value: 'name' }
         ]
+      },
+      {
+        type: 'switch',
+        field: 'onlyShowStarterDept',
+        title: '只显示发起人部门',
+        value: false
       }
     ]
   })

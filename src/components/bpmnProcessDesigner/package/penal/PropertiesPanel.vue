@@ -61,13 +61,22 @@
             />
           </el-collapse-item>
           <!-- 错误属性配置 - 排在常规之后的第二栏 -->
-          <el-collapse-item
-            v-if="isErrorBoundaryEvent"
-            name="errorEvent"
-            key="errorEvent"
-          >
+          <el-collapse-item v-if="isErrorBoundaryEvent" name="errorEvent" key="errorEvent">
             <template #title><Icon icon="ep:warning" />错误事件</template>
             <ErrorEventConfig
+              :id="elementId"
+              :type="elementType"
+              :business-object="elementBusinessObject"
+            />
+          </el-collapse-item>
+          <!-- 升级属性配置 - 排在常规之后的第二栏 -->
+          <el-collapse-item
+            v-if="isEscalationBoundaryEvent"
+            name="escalationEvent"
+            key="escalationEvent"
+          >
+            <template #title><Icon icon="ep:promotion" />升级事件</template>
+            <EscalationEventConfig
               :id="elementId"
               :type="elementType"
               :business-object="elementBusinessObject"
@@ -162,6 +171,7 @@ import TimeEventConfig from './time-event-config/TimeEventConfig.vue'
 import MessageEventConfig from './message-event/MessageEventConfig.vue'
 import SignalEventConfig from './signal-event/SignalEventConfig.vue'
 import ErrorEventConfig from './error-event/ErrorEventConfig.vue'
+import EscalationEventConfig from './escalation-event/EscalationEventConfig.vue'
 import { ref, watch, computed } from 'vue'
 
 defineOptions({ name: 'MyPropertiesPanel' })
@@ -264,6 +274,17 @@ const isErrorBoundaryEvent = computed(() => {
 
   const eventDefType = eventDefinitions[0]?.$type
   return eventDefType === 'bpmn:ErrorEventDefinition'
+})
+
+// 判断是否为升级边界事件
+const isEscalationBoundaryEvent = computed(() => {
+  if (elementType.value !== 'BoundaryEvent') return false
+
+  const eventDefinitions = elementBusinessObject.value?.eventDefinitions
+  if (!eventDefinitions || eventDefinitions.length === 0) return false
+
+  const eventDefType = eventDefinitions[0]?.$type
+  return eventDefType === 'bpmn:EscalationEventDefinition'
 })
 
 // 初始化 bpmnInstances

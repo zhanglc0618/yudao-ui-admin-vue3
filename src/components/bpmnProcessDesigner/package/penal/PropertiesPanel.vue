@@ -64,6 +64,14 @@
             <template #title><Icon icon="ep:comment" />消息与信号</template>
             <signal-and-massage />
           </el-collapse-item>
+          <el-collapse-item
+            name="escalationError"
+            v-if="elementType === 'Process'"
+            key="escalationError"
+          >
+            <template #title><Icon icon="ep:warning-filled" />升级与错误</template>
+            <escalation-and-error />
+          </el-collapse-item>
           <el-collapse-item name="condition" v-if="conditionFormVisible" key="condition">
             <template #title><Icon icon="ep:promotion" />流转条件</template>
             <flow-condition :business-object="elementBusinessObject" :type="elementType" />
@@ -131,6 +139,7 @@ import ElementTask from './task/ElementTask.vue'
 import ElementMultiInstance from './multi-instance/ElementMultiInstance.vue'
 import FlowCondition from './flow-condition/FlowCondition.vue'
 import SignalAndMassage from './signal-message/SignalAndMessage.vue'
+import EscalationAndError from './escalation-error/EscalationAndError.vue'
 import ElementListeners from './listeners/ElementListeners.vue'
 import ElementProperties from './properties/ElementProperties.vue'
 // import ElementForm from './form/ElementForm.vue'

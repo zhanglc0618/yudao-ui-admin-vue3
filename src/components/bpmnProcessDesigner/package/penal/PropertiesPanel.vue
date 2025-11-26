@@ -26,7 +26,11 @@
             />
           </el-collapse-item>
           <!-- 时间事件配置 - 排在常规之后的第二栏 -->
-          <el-collapse-item v-if="isTimerIntermediateCatchEvent" name="timeEvent" key="timeEvent">
+          <el-collapse-item
+            v-if="isTimerIntermediateCatchEvent || isTimerStartEvent"
+            name="timeEvent"
+            key="timeEvent"
+          >
             <template #title><Icon icon="ep:timer" />时间事件</template>
             <TimeEventConfig :businessObject="elementBusinessObject" :key="elementId" />
           </el-collapse-item>
@@ -192,6 +196,17 @@ const isTimerIntermediateCatchEvent = computed(() => {
 
   const eventDefType = eventDefinitions[0]?.$type
   // 只显示定时器事件，排除消息和信号事件
+  return eventDefType === 'bpmn:TimerEventDefinition'
+})
+
+// 判断是否为定时开始事件
+const isTimerStartEvent = computed(() => {
+  if (elementType.value !== 'StartEvent') return false
+
+  const eventDefinitions = elementBusinessObject.value?.eventDefinitions
+  if (!eventDefinitions || eventDefinitions.length === 0) return false
+
+  const eventDefType = eventDefinitions[0]?.$type
   return eventDefType === 'bpmn:TimerEventDefinition'
 })
 

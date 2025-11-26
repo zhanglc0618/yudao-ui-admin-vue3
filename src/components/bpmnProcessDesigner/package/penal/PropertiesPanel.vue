@@ -60,6 +60,19 @@
               :business-object="elementBusinessObject"
             />
           </el-collapse-item>
+          <!-- 错误属性配置 - 排在常规之后的第二栏 -->
+          <el-collapse-item
+            v-if="isErrorBoundaryEvent"
+            name="errorEvent"
+            key="errorEvent"
+          >
+            <template #title><Icon icon="ep:warning" />错误事件</template>
+            <ErrorEventConfig
+              :id="elementId"
+              :type="elementType"
+              :business-object="elementBusinessObject"
+            />
+          </el-collapse-item>
           <el-collapse-item name="condition" v-if="elementType === 'Process'" key="message">
             <template #title><Icon icon="ep:comment" />消息与信号</template>
             <signal-and-massage />
@@ -148,6 +161,7 @@ import { getTaskCollapseItemName, isTaskCollapseItemShow } from './task/data'
 import TimeEventConfig from './time-event-config/TimeEventConfig.vue'
 import MessageEventConfig from './message-event/MessageEventConfig.vue'
 import SignalEventConfig from './signal-event/SignalEventConfig.vue'
+import ErrorEventConfig from './error-event/ErrorEventConfig.vue'
 import { ref, watch, computed } from 'vue'
 
 defineOptions({ name: 'MyPropertiesPanel' })
@@ -239,6 +253,17 @@ const isSignalIntermediateCatchEvent = computed(() => {
 
   const eventDefType = eventDefinitions[0]?.$type
   return eventDefType === 'bpmn:SignalEventDefinition'
+})
+
+// 判断是否为错误边界事件
+const isErrorBoundaryEvent = computed(() => {
+  if (elementType.value !== 'BoundaryEvent') return false
+
+  const eventDefinitions = elementBusinessObject.value?.eventDefinitions
+  if (!eventDefinitions || eventDefinitions.length === 0) return false
+
+  const eventDefType = eventDefinitions[0]?.$type
+  return eventDefType === 'bpmn:ErrorEventDefinition'
 })
 
 // 初始化 bpmnInstances

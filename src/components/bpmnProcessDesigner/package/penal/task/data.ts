@@ -18,7 +18,7 @@ export const installedComponent = {
     component: ScriptTask
   },
   ReceiveTask: {
-    name: '接收任务',
+    name: '消息事件',
     component: ReceiveTask
   },
   CallActivity: {

@@ -1,50 +1,24 @@
 <template>
   <div style="margin-top: 16px">
-    <el-form-item label="消息实例">
-      <div
-        style="
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          flex-wrap: nowrap;
-        "
+    <el-form-item label="消息选择">
+      <el-select
+        v-model="bindMessageId"
+        @change="updateTaskMessage"
+        placeholder="请选择消息"
+        style="width: 100%"
       >
-        <el-select v-model="bindMessageId" @change="updateTaskMessage">
-          <el-option
-            v-for="key in Object.keys(messageMap)"
-            :value="key"
-            :label="messageMap[key]"
-            :key="key"
-          />
-        </el-select>
-        <XButton
-          type="primary"
-          preIcon="ep:plus"
-          style="margin-left: 8px"
-          @click="openMessageModel"
+        <el-option
+          v-for="key in Object.keys(messageMap)"
+          :value="key"
+          :label="messageMap[key]"
+          :key="key"
         />
+      </el-select>
+      <div v-if="showEmptyTip" class="empty-tip">
+        <Icon icon="ep:warning-filled" />
+        消息列表为空，请到流程属性中增加
       </div>
     </el-form-item>
-    <el-dialog
-      v-model="messageModelVisible"
-      :close-on-click-modal="false"
-      title="创建新消息"
-      width="400px"
-      append-to-body
-      destroy-on-close
-    >
-      <el-form :model="newMessageForm" size="small" label-width="90px">
-        <el-form-item label="消息ID">
-          <el-input v-model="newMessageForm.id" clearable />
-        </el-form-item>
-        <el-form-item label="消息名称">
-          <el-input v-model="newMessageForm.name" clearable />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button size="small" type="primary" @click="createNewMessage">确 认</el-button>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
@@ -55,67 +29,85 @@ const props = defineProps({
   type: String
 })
 
-const message = useMessage()
-
 const bindMessageId = ref('')
-const newMessageForm = ref<any>({})
 const messageMap = ref<any>({})
-const messageModelVisible = ref(false)
 const bpmnElement = ref<any>()
 const bpmnMessageRefsMap = ref<any>()
 const bpmnRootElements = ref<any>()
+const isUpdating = ref(false) // 添加更新标志位
+
+const showEmptyTip = computed(() => {
+  return Object.keys(messageMap.value).length === 1 // 只有"无"选项
+})
 
 const bpmnInstances = () => (window as any).bpmnInstances
+
 const getBindMessage = () => {
-  bpmnElement.value = bpmnInstances().bpmnElement
+  // 如果正在更新，跳过获取，避免干扰下拉框
+  if (isUpdating.value) return
+
+  const instances = bpmnInstances()
+  if (!instances || !instances.bpmnElement) return
+
+  bpmnElement.value = instances.bpmnElement
   bindMessageId.value = bpmnElement.value.businessObject?.messageRef?.id || '-1'
 }
-const openMessageModel = () => {
-  messageModelVisible.value = true
-  newMessageForm.value = {}
-}
-const createNewMessage = () => {
-  if (messageMap.value[newMessageForm.value.id]) {
-    message.error('该消息已存在，请修改id后重新保存')
-    return
-  }
-  const newMessage = bpmnInstances().moddle.create('bpmn:Message', newMessageForm.value)
-  bpmnRootElements.value.push(newMessage)
-  messageMap.value[newMessageForm.value.id] = newMessageForm.value.name
-  bpmnMessageRefsMap.value[newMessageForm.value.id] = newMessage
-  messageModelVisible.value = false
-}
+
 const updateTaskMessage = (messageId) => {
-  if (messageId === '-1') {
-    bpmnInstances().modeling.updateProperties(toRaw(bpmnElement.value), {
-      messageRef: null
-    })
-  } else {
-    bpmnInstances().modeling.updateProperties(toRaw(bpmnElement.value), {
-      messageRef: bpmnMessageRefsMap.value[messageId]
-    })
-  }
+  // 设置更新标志，防止 getBindMessage 干扰
+  isUpdating.value = true
+
+  nextTick(() => {
+    try {
+      if (messageId === '-1') {
+        bpmnInstances().modeling.updateProperties(toRaw(bpmnElement.value), {
+          messageRef: null
+        })
+      } else {
+        bpmnInstances().modeling.updateProperties(toRaw(bpmnElement.value), {
+          messageRef: bpmnMessageRefsMap.value[messageId]
+        })
+      }
+    } catch (error) {
+      console.error('更新消息引用失败:', error)
+    } finally {
+      // 延迟重置标志位，确保事件处理完成
+      setTimeout(() => {
+        isUpdating.value = false
+      }, 100)
+    }
+  })
 }
 
 onMounted(() => {
+  const instances = bpmnInstances()
+  if (!instances || !instances.modeler) {
+    console.error('BPMN实例未初始化')
+    return
+  }
+
   bpmnMessageRefsMap.value = Object.create(null)
-  bpmnRootElements.value = bpmnInstances().modeler.getDefinitions().rootElements
+  bpmnRootElements.value = instances.modeler.getDefinitions().rootElements
+
+  // 先添加"无"选项
+  messageMap.value['-1'] = '无'
+
+  // 获取所有消息
   bpmnRootElements.value
     .filter((el) => el.$type === 'bpmn:Message')
     .forEach((m) => {
       bpmnMessageRefsMap.value[m.id] = m
       messageMap.value[m.id] = m.name
     })
-  messageMap.value['-1'] = '无'
 })
 
 onBeforeUnmount(() => {
   bpmnElement.value = null
 })
+
 watch(
   () => props.id,
   () => {
-    // bpmnElement.value = bpmnInstances().bpmnElement
     nextTick(() => {
       getBindMessage()
     })
@@ -123,3 +115,14 @@ watch(
   { immediate: true }
 )
 </script>
+
+<style lang="scss" scoped>
+.empty-tip {
+  margin-top: 8px;
+  color: #e6a23c;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+</style>

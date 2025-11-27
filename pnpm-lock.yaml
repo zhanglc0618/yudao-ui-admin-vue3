@@ -78,8 +78,8 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0(echarts@5.5.1)
       element-plus:
-        specifier: 2.11.1
-        version: 2.11.1(vue@3.5.12(typescript@5.3.3))
+        specifier: 2.11.7
+        version: 2.11.7(vue@3.5.12(typescript@5.3.3))
       fast-xml-parser:
         specifier: ^4.3.2
         version: 4.5.0
@@ -241,11 +241,11 @@ importers:
         specifier: ^10.4.17
         version: 10.4.20(postcss@8.4.49)
       bpmn-js:
-        specifier: ^17.9.2
-        version: 17.11.1
+        specifier: ^18.8.0
+        version: 18.9.1
       bpmn-js-properties-panel:
-        specifier: 5.23.0
-        version: 5.23.0(@bpmn-io/properties-panel@3.25.0(@lezer/common@1.2.3))(bpmn-js@17.11.1)(camunda-bpmn-js-behaviors@1.7.2(bpmn-js@17.11.1)(camunda-bpmn-moddle@7.0.1)(zeebe-bpmn-moddle@1.7.0))(diagram-js@12.8.1)
+        specifier: 5.42.3
+        version: 5.42.3(@bpmn-io/properties-panel@3.25.0(@lezer/common@1.2.3))(bpmn-js@18.9.1)(camunda-bpmn-js-behaviors@1.7.2(bpmn-js@18.9.1)(camunda-bpmn-moddle@7.0.1)(zeebe-bpmn-moddle@1.7.0))(diagram-js@12.8.1)
       consola:
         specifier: ^3.2.3
         version: 3.2.3
@@ -894,8 +894,8 @@ packages:
   '@bpmn-io/diagram-js-ui@0.2.3':
     resolution: {integrity: sha512-OGyjZKvGK8tHSZ0l7RfeKhilGoOGtFDcoqSGYkX0uhFlo99OVZ9Jn1K7TJGzcE9BdKwvA5Y5kGqHEhdTxHvFfw==}
 
-  '@bpmn-io/extract-process-variables@0.8.0':
-    resolution: {integrity: sha512-yAS7ZYX+D56K+luC36u96eRMLb4VHcPUwTUqMZ/Z/Je2gou2DJLRbuBTHAB4jjKt4wFCHSG4B8Y+TrBciEYf4w==}
+  '@bpmn-io/extract-process-variables@1.0.1':
+    resolution: {integrity: sha512-bisd1kL38HIjB+nmvtw3mpktH0Il3y55eiH/F7kKJs00jf+eksRBoUdr8q4Ge7w5uWxEKVszrasZCee5LTcYEw==}
 
   '@bpmn-io/feel-editor@1.9.1':
     resolution: {integrity: sha512-UxSORdh5cwKM4fib4f9ov6J1/BHGpQVNtA+wPyEdKQyCyz3wqwE2/xe5wneVR1j5QFC5m2Na8nTy4a1TDFvZTw==}
@@ -1834,6 +1834,9 @@ packages:
   '@types/lodash@4.17.13':
     resolution: {integrity: sha512-lfx+dftrEZcdBPczf9d0Qv0x+j/rfNCMuC6OcfXmO8gkfeNAY88PgKUbvG56whcN23gc27yenwF6oJZXGFpYxg==}
 
+  '@types/lodash@4.17.21':
+    resolution: {integrity: sha512-FOvQ0YPD5NOfPgMzJihoT+Za5pdkDJWcbpuj1DjaKZIr/gxodQjY/uWEFlTNqW2ugXHUiL8lRQgw63dzKHZdeQ==}
+
   '@types/node@10.17.60':
     resolution: {integrity: sha512-F0KIgDJfy2nA3zMLmWGKxcH2ZVEtCZXHHdOQs2gSaQ27+lNeEfGxzkIw90aXswATX7AZ33tahPbzy6KAfUreVw==}
 
@@ -2512,8 +2515,8 @@ packages:
   boolbase@1.0.0:
     resolution: {integrity: sha512-JZOSA7Mo9sNGB8+UjSgzdLtokWAky1zbztM3WRLCbZ70/3cTANmQmOdR7y2g+J0e2WXywy1yS468tY+IruqEww==}
 
-  bpmn-js-properties-panel@5.23.0:
-    resolution: {integrity: sha512-4B27LM8oV14A2QWRvazV17h4NxbkNERcqU+AGJmxKImMlLhu9893MWR+pCdTQCTphBdBkuD8ksWm+1wVCedJ7g==}
+  bpmn-js-properties-panel@5.42.3:
+    resolution: {integrity: sha512-WHoebcYaLJkufS7dO1TbLCF0NYAnzbEoRPz4IjJlrtXXuZgVUgADf+uep7Il4d3ZUY10xzfFkRg7qleT3JyQww==}
     peerDependencies:
       '@bpmn-io/properties-panel': '>= 3.7'
       bpmn-js: '>= 11.5'
@@ -2524,11 +2527,12 @@ packages:
     resolution: {integrity: sha512-sN7US4gIA5tGs74gYLnZ2Eay+gPqkKPjEttp/VRTeydSg0RGPuGiGwTo1TaLf8cV8FXFCDD2actkQWn/aeg79Q==}
     engines: {node: '>= 16'}
 
-  bpmn-js@17.11.1:
-    resolution: {integrity: sha512-ywCeTg5kvN8lYkU+fHE+YXTGlfKc55lRBn7zW3k1//toeMNPy/PS/uQiujRWdFhMrH5dbtDvlwWukNw2pjWw8Q==}
+  bpmn-js@18.9.1:
+    resolution: {integrity: sha512-hpTwvid74iHLdqBW/ZOverBzWboXFY1sMtGsizrbcaftXc7T9STdQ5Ny5++LOw1lAv/AQZiDxgk5JjaRGwKVPw==}
 
-  bpmn-moddle@8.1.0:
-    resolution: {integrity: sha512-yI5OAFfYVJwViKTsTsonVfCBPtB3MlefADUORwNIxxBOMp21vnoxuxsdgUWlPH/dvAEZh/+mr8UtqOBNu8NC5Q==}
+  bpmn-moddle@9.0.4:
+    resolution: {integrity: sha512-dr5s3vtOG8NkVSwa8CC55XBIKKwajomSZRb0RiMOOOF6TpqZBZvtbDjpzWICvdd/plDF6uOtaRfSgblPQLAioQ==}
+    engines: {node: '>= 18'}
 
   brace-expansion@1.1.11:
     resolution: {integrity: sha512-iCuPHDFgrHX7H2vEI/5xpz07zSHB00TpugqhmYtVmMO6518mCuRMoOYFldEBl0g187ufozdaHgWKcYFb61qGiA==}
@@ -2952,6 +2956,9 @@ packages:
   dayjs@1.11.13:
     resolution: {integrity: sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==}
 
+  dayjs@1.11.19:
+    resolution: {integrity: sha512-t5EcLVS6QPBNqM2z8fakk/NKel+Xzshgt8FFKAn+qwlD1pzZWxh0nVCrvFK7ZDb6XucZeF9z8C7CBWTRIVApAw==}
+
   de-indent@1.0.2:
     resolution: {integrity: sha512-e/1zu3xH5MQryN2zdVaF0OrdNLUbvWxzMbi+iNA6Bky7l1RoP8a2fIbRocyHclXt/arDrrR6lL3TqFD9pMQTsg==}
 
@@ -3004,8 +3011,8 @@ packages:
   diagram-js@12.8.1:
     resolution: {integrity: sha512-LF9BiwjbOPpZd0ez5VSlYRbdbEA59YQX43bWvNDp1rLMv0xwZ5yIg4oaYDK82nIQ0kH1tjvoQRpNevMTCgQVyw==}
 
-  diagram-js@14.11.3:
-    resolution: {integrity: sha512-Seq9BHAXfzKS60L4v4Gvgvv72wOtvrfJQAyyPm9pntSZDMzjoodPSXnEUPud1G2zVCMGEUUW++s0reEdaWgkXA==}
+  diagram-js@15.4.0:
+    resolution: {integrity: sha512-rpwDLA/w55wPfiZgp/z2T6cFdCXU3bARGdjhUpEOoh673K18OJ4ruEu3+/94ALRIIyEvJ0XHUk9sgZrzzE79ng==}
 
   didi@10.2.2:
     resolution: {integrity: sha512-l8NYkYFXV1izHI65EyT8EXOjUZtKmQkHLTT89cSP7HU5J/G7AOj0dXKtLc04EXYlga99PBY18IPjOeZ+c3DI4w==}
@@ -3091,8 +3098,8 @@ packages:
   electron-to-chromium@1.5.67:
     resolution: {integrity: sha512-nz88NNBsD7kQSAGGJyp8hS6xSPtWwqNogA0mjtc2nUYeEf3nURK9qpV18TuBdDmEDgVWotS8Wkzf+V52dSQ/LQ==}
 
-  element-plus@2.11.1:
-    resolution: {integrity: sha512-weYFIniyNXTAe9vJZnmZpYzurh4TDbdKhBsJwhbzuo0SDZ8PLwHVll0qycJUxc6SLtH+7A9F7dvdDh5CnqeIVA==}
+  element-plus@2.11.7:
+    resolution: {integrity: sha512-Bh47wuzsqaNBNDkbtlOlZER1cGcOB8GsXp/+C9b95MOrk0wvoHUV4NKKK7xMkfYNFYdYysQ752oMhnExgAL6+g==}
     peerDependencies:
       vue: ^3.2.0
 
@@ -3150,9 +3157,6 @@ packages:
   escalade@3.2.0:
     resolution: {integrity: sha512-WUj2qlxaQtO4g6Pq5c29GTcWGDyd8itL8zTlipgECz3JesAiiOKotd8JU6otB3PACgG6xkJUyVhboMS+bje/jA==}
     engines: {node: '>=6'}
-
-  escape-html@1.0.3:
-    resolution: {integrity: sha512-NiSupZ4OeuGwr68lGIeym/ksIZMJodUGOSCZ/FSnTxcrekbvqrgdUxlJOMpijaKZVjAJrWrGs/6Jy8OMuyj9ow==}
 
   escape-string-regexp@1.0.5:
     resolution: {integrity: sha512-vbRorB5FUQWvla16U8R/qgaFIya2qGzwDrNmCZuYKrbdSUMG6I1ZCGQRefkRVhuOkIGVne7BQ35DSfo1qvJqFg==}
@@ -4002,6 +4006,9 @@ packages:
   min-dash@4.2.2:
     resolution: {integrity: sha512-qbhSYUxk6mBaF096B3JOQSumXbKWHenmT97cSpdNzgkWwGjhjhE/KZODCoDNhI2I4C9Cb6R/Q13S4BYkUSXoXQ==}
 
+  min-dash@4.2.3:
+    resolution: {integrity: sha512-VLMYQI5+FcD9Ad24VcB08uA83B07OhueAlZ88jBK6PyupTvEJwllTMUqMy0wPGYs7pZUEtEEMWdHB63m3LtEcg==}
+
   min-document@2.19.0:
     resolution: {integrity: sha512-9Wy1B3m3f66bPPmU5hdA4DR4PB2OfDU/+GS3yAB7IQozE3tqXaVv2zOjgla7MEGSRv95+ILmOuvhLkOK6wJtCQ==}
 
@@ -4043,11 +4050,14 @@ packages:
   mlly@1.7.3:
     resolution: {integrity: sha512-xUsx5n/mN0uQf4V548PKQ+YShA4/IW0KI1dZhrNrPCLG+xizETbHTkOa1f8/xut9JRPp8kQuMnz0oqwkTiLo/A==}
 
-  moddle-xml@10.1.0:
-    resolution: {integrity: sha512-erWckwLt+dYskewKXJso9u+aAZ5172lOiYxSOqKCPTy7L/xmqH1PoeoA7eVC7oJTt3PqF5TkZzUmbjGH6soQBg==}
+  moddle-xml@11.0.0:
+    resolution: {integrity: sha512-L3Sseepfcq9Uy0iIfqEDTXSoYLva1Y/JGbN/4AMOeQ6cqbu8Ma/SDJIdOFm7smsAa64j2z3SwCGG3FIilQVnUg==}
+    engines: {node: '>= 18'}
+    peerDependencies:
+      moddle: '>= 6.2.0'
 
-  moddle@6.2.3:
-    resolution: {integrity: sha512-bLVN+ZHL3aKnhxc19XtjUfvdJsS3EsiEJC7bT6YPD11qYmTzvsxrGgyYz1Ouof7TZuGw0lDJ1OLmEnxcpQWk3Q==}
+  moddle@7.2.0:
+    resolution: {integrity: sha512-x1+JREThy7JBOBR3g2hbOnOfrlC/YAWXX9RzrSZS5HhqeuBly9H/PCtOBtcQs+Y2sjRAXF+WTNSgHvn8Uq+6Yw==}
 
   mpd-parser@0.22.1:
     resolution: {integrity: sha512-fwBebvpyPUU8bOzvhX0VQZgSohncbgYwUyJJoTSNpmy7ccD2ryiCvM7oRkn/xQH5cv73/xU7rJSNCLjdGFor0Q==}
@@ -4561,8 +4571,9 @@ packages:
   sax@1.4.1:
     resolution: {integrity: sha512-+aWOz7yVScEGoKNd4PA10LZ8sk0A/z5+nXQG5giUO5rprX9jgYsTdov9qCchZiPIZezbZH+jRut8nPodFAX4Jg==}
 
-  saxen@8.1.2:
-    resolution: {integrity: sha512-xUOiiFbc3Ow7p8KMxwsGICPx46ZQvy3+qfNVhrkwfz3Vvq45eGt98Ft5IQaA1R/7Tb5B5MKh9fUR9x3c3nDTxw==}
+  saxen@10.0.0:
+    resolution: {integrity: sha512-RXsmWok/SAWqOG/f5ADEz51DN9WtZEzqih3e08ranldcaXekxjx8NBKjGh/y5hlowjo0JH/LekBu6gtPFD1G6g==}
+    engines: {node: '>= 18'}
 
   scroll-into-view-if-needed@2.2.31:
     resolution: {integrity: sha512-dGCXy99wZQivjmjIqihaBQNjryrz5rueJY7eHfTdyWEiR4ttYpsajb14rn9s5d4DY4EcY6+4+U/maARBXJedkA==}
@@ -5979,9 +5990,9 @@ snapshots:
       htm: 3.1.1
       preact: 10.25.0
 
-  '@bpmn-io/extract-process-variables@0.8.0':
+  '@bpmn-io/extract-process-variables@1.0.1':
     dependencies:
-      min-dash: 4.2.2
+      min-dash: 4.2.3
 
   '@bpmn-io/feel-editor@1.9.1(@lezer/common@1.2.3)':
     dependencies:
@@ -6333,7 +6344,7 @@ snapshots:
       '@form-create/element-ui': 3.2.32(vue@3.5.12(typescript@5.3.3))
       '@form-create/utils': 3.2.31
       codemirror: 6.65.7
-      element-plus: 2.11.1(vue@3.5.12(typescript@5.3.3))
+      element-plus: 2.11.7(vue@3.5.12(typescript@5.3.3))
       js-beautify: 1.15.4
       signature_pad: 5.1.1
       vue: 3.5.12(typescript@5.3.3)
@@ -6892,6 +6903,8 @@ snapshots:
       '@types/lodash': 4.17.13
 
   '@types/lodash@4.17.13': {}
+
+  '@types/lodash@4.17.21': {}
 
   '@types/node@10.17.60': {}
 
@@ -7838,17 +7851,17 @@ snapshots:
 
   boolbase@1.0.0: {}
 
-  bpmn-js-properties-panel@5.23.0(@bpmn-io/properties-panel@3.25.0(@lezer/common@1.2.3))(bpmn-js@17.11.1)(camunda-bpmn-js-behaviors@1.7.2(bpmn-js@17.11.1)(camunda-bpmn-moddle@7.0.1)(zeebe-bpmn-moddle@1.7.0))(diagram-js@12.8.1):
+  bpmn-js-properties-panel@5.42.3(@bpmn-io/properties-panel@3.25.0(@lezer/common@1.2.3))(bpmn-js@18.9.1)(camunda-bpmn-js-behaviors@1.7.2(bpmn-js@18.9.1)(camunda-bpmn-moddle@7.0.1)(zeebe-bpmn-moddle@1.7.0))(diagram-js@12.8.1):
     dependencies:
-      '@bpmn-io/extract-process-variables': 0.8.0
+      '@bpmn-io/extract-process-variables': 1.0.1
       '@bpmn-io/properties-panel': 3.25.0(@lezer/common@1.2.3)
       array-move: 4.0.0
-      bpmn-js: 17.11.1
-      camunda-bpmn-js-behaviors: 1.7.2(bpmn-js@17.11.1)(camunda-bpmn-moddle@7.0.1)(zeebe-bpmn-moddle@1.7.0)
+      bpmn-js: 18.9.1
+      camunda-bpmn-js-behaviors: 1.7.2(bpmn-js@18.9.1)(camunda-bpmn-moddle@7.0.1)(zeebe-bpmn-moddle@1.7.0)
       diagram-js: 12.8.1
       ids: 1.0.5
-      min-dash: 4.2.2
-      min-dom: 4.2.1
+      min-dash: 4.2.3
+      min-dom: 5.1.1
 
   bpmn-js-token-simulation@0.36.2:
     dependencies:
@@ -7857,22 +7870,22 @@ snapshots:
       min-dom: 4.2.1
       randomcolor: 0.6.2
 
-  bpmn-js@17.11.1:
+  bpmn-js@18.9.1:
     dependencies:
-      bpmn-moddle: 8.1.0
-      diagram-js: 14.11.3
-      diagram-js-direct-editing: 3.2.0(diagram-js@14.11.3)
+      bpmn-moddle: 9.0.4
+      diagram-js: 15.4.0
+      diagram-js-direct-editing: 3.2.0(diagram-js@15.4.0)
       ids: 1.0.5
       inherits-browser: 0.1.0
       min-dash: 4.2.2
       min-dom: 4.2.1
       tiny-svg: 3.1.3
 
-  bpmn-moddle@8.1.0:
+  bpmn-moddle@9.0.4:
     dependencies:
       min-dash: 4.2.2
-      moddle: 6.2.3
-      moddle-xml: 10.1.0
+      moddle: 7.2.0
+      moddle-xml: 11.0.0(moddle@7.2.0)
 
   brace-expansion@1.1.11:
     dependencies:
@@ -7915,9 +7928,9 @@ snapshots:
 
   camelcase@5.3.1: {}
 
-  camunda-bpmn-js-behaviors@1.7.2(bpmn-js@17.11.1)(camunda-bpmn-moddle@7.0.1)(zeebe-bpmn-moddle@1.7.0):
+  camunda-bpmn-js-behaviors@1.7.2(bpmn-js@18.9.1)(camunda-bpmn-moddle@7.0.1)(zeebe-bpmn-moddle@1.7.0):
     dependencies:
-      bpmn-js: 17.11.1
+      bpmn-js: 18.9.1
       camunda-bpmn-moddle: 7.0.1
       ids: 1.0.5
       min-dash: 4.2.2
@@ -8322,6 +8335,8 @@ snapshots:
 
   dayjs@1.11.13: {}
 
+  dayjs@1.11.19: {}
+
   de-indent@1.0.2: {}
 
   debug@4.3.7:
@@ -8353,9 +8368,9 @@ snapshots:
   detect-libc@1.0.3:
     optional: true
 
-  diagram-js-direct-editing@3.2.0(diagram-js@14.11.3):
+  diagram-js-direct-editing@3.2.0(diagram-js@15.4.0):
     dependencies:
-      diagram-js: 14.11.3
+      diagram-js: 15.4.0
       min-dash: 4.2.2
       min-dom: 4.2.1
 
@@ -8372,7 +8387,7 @@ snapshots:
       path-intersection: 2.2.1
       tiny-svg: 3.1.3
 
-  diagram-js@14.11.3:
+  diagram-js@15.4.0:
     dependencies:
       '@bpmn-io/diagram-js-ui': 0.2.3
       clsx: 2.1.1
@@ -8464,18 +8479,17 @@ snapshots:
 
   electron-to-chromium@1.5.67: {}
 
-  element-plus@2.11.1(vue@3.5.12(typescript@5.3.3)):
+  element-plus@2.11.7(vue@3.5.12(typescript@5.3.3)):
     dependencies:
       '@ctrl/tinycolor': 3.6.1
       '@element-plus/icons-vue': 2.3.2(vue@3.5.12(typescript@5.3.3))
       '@floating-ui/dom': 1.6.12
       '@popperjs/core': '@sxzz/popperjs-es@2.11.7'
-      '@types/lodash': 4.17.13
+      '@types/lodash': 4.17.21
       '@types/lodash-es': 4.17.12
       '@vueuse/core': 9.13.0(vue@3.5.12(typescript@5.3.3))
       async-validator: 4.2.5
-      dayjs: 1.11.13
-      escape-html: 1.0.3
+      dayjs: 1.11.19
       lodash: 4.17.21
       lodash-es: 4.17.21
       lodash-unified: 1.0.3(@types/lodash-es@4.17.12)(lodash-es@4.17.21)(lodash@4.17.21)
@@ -8554,8 +8568,6 @@ snapshots:
       '@esbuild/win32-x64': 0.19.12
 
   escalade@3.2.0: {}
-
-  escape-html@1.0.3: {}
 
   escape-string-regexp@1.0.5: {}
 
@@ -9428,6 +9440,8 @@ snapshots:
 
   min-dash@4.2.2: {}
 
+  min-dash@4.2.3: {}
+
   min-document@2.19.0:
     dependencies:
       dom-walk: 0.1.2
@@ -9441,7 +9455,7 @@ snapshots:
   min-dom@5.1.1:
     dependencies:
       domify: 2.0.0
-      min-dash: 4.2.2
+      min-dash: 4.2.3
 
   minimatch@3.1.2:
     dependencies:
@@ -9476,13 +9490,13 @@ snapshots:
       pkg-types: 1.2.1
       ufo: 1.5.4
 
-  moddle-xml@10.1.0:
+  moddle-xml@11.0.0(moddle@7.2.0):
     dependencies:
       min-dash: 4.2.2
-      moddle: 6.2.3
-      saxen: 8.1.2
+      moddle: 7.2.0
+      saxen: 10.0.0
 
-  moddle@6.2.3:
+  moddle@7.2.0:
     dependencies:
       min-dash: 4.2.2
 
@@ -9951,7 +9965,7 @@ snapshots:
 
   sax@1.4.1: {}
 
-  saxen@8.1.2: {}
+  saxen@10.0.0: {}
 
   scroll-into-view-if-needed@2.2.31:
     dependencies:

@@ -10,16 +10,19 @@
       <el-table-column label="错误ID" prop="id" max-width="300px" show-overflow-tooltip />
       <el-table-column label="错误名称" prop="name" max-width="300px" show-overflow-tooltip />
       <el-table-column label="错误代码" prop="errorCode" max-width="300px" show-overflow-tooltip />
-      <el-table-column label="操作" width="80px" align="center">
-        <template #default="{ $index }">
+      <el-table-column label="操作" width="110px">
+        <template #default="scope">
+          <el-button link @click="openEditModel('error', scope.row, scope.$index)" size="small">
+            编辑
+          </el-button>
+          <el-divider direction="vertical" />
           <el-button
-            type="danger"
-            size="small"
             link
-            @click="deleteObject('error', $index)"
-            title="删除"
+            size="small"
+            style="color: #ff4d4f"
+            @click="removeObject('error', scope.row)"
           >
-            <Icon icon="ep:delete" />
+            移除
           </el-button>
         </template>
       </el-table-column>
@@ -48,16 +51,23 @@
         max-width="300px"
         show-overflow-tooltip
       />
-      <el-table-column label="操作" width="80px" align="center">
-        <template #default="{ $index }">
+      <el-table-column label="操作" width="110px">
+        <template #default="scope">
           <el-button
-            type="danger"
-            size="small"
             link
-            @click="deleteObject('escalation', $index)"
-            title="删除"
+            @click="openEditModel('escalation', scope.row, scope.$index)"
+            size="small"
           >
-            <Icon icon="ep:delete" />
+            编辑
+          </el-button>
+          <el-divider direction="vertical" />
+          <el-button
+            link
+            size="small"
+            style="color: #ff4d4f"
+            @click="removeObject('escalation', scope.row)"
+          >
+            移除
           </el-button>
         </template>
       </el-table-column>
@@ -95,6 +105,7 @@
 </template>
 
 <script lang="ts" setup>
+import { ElMessageBox } from 'element-plus'
 defineOptions({ name: 'EscalationAndError' })
 
 const message = useMessage()
@@ -106,11 +117,21 @@ const modelObjectForm = ref<any>({})
 const rootElements = ref()
 const errorIdMap = ref()
 const escalationIdMap = ref()
+const editingIndex = ref(-1) // 正在编辑的索引，-1 表示新建
 
 const modelConfig = computed(() => {
+  const isEdit = editingIndex.value !== -1
   const configs = {
-    error: { title: '创建错误', idLabel: '错误ID', nameLabel: '错误名称' },
-    escalation: { title: '创建升级', idLabel: '升级ID', nameLabel: '升级名称' }
+    error: {
+      title: isEdit ? '编辑错误' : '创建错误',
+      idLabel: '错误ID',
+      nameLabel: '错误名称'
+    },
+    escalation: {
+      title: isEdit ? '编辑升级' : '创建升级',
+      idLabel: '升级ID',
+      nameLabel: '升级名称'
+    }
   }
   return configs[modelType.value] || configs.error
 })
@@ -139,67 +160,87 @@ const initDataList = () => {
 
 const openModel = (type) => {
   modelType.value = type
+  editingIndex.value = -1
   modelObjectForm.value = {}
   dialogVisible.value = true
 }
 
+const openEditModel = (type, row, index) => {
+  modelType.value = type
+  editingIndex.value = index
+  modelObjectForm.value = { ...row }
+  dialogVisible.value = true
+}
+
 const addNewObject = () => {
-  const typeConfigs = {
-    error: {
-      idMap: errorIdMap.value,
-      type: 'bpmn:Error',
-      errorMsg: '该错误已存在，请修改id后重新保存'
-    },
-    escalation: {
-      idMap: escalationIdMap.value,
-      type: 'bpmn:Escalation',
-      errorMsg: '该升级已存在，请修改id后重新保存'
+  if (modelType.value === 'error') {
+    // 编辑模式
+    if (editingIndex.value !== -1) {
+      const targetError = errorList.value[editingIndex.value]
+      // 查找 rootElements 中的原始对象
+      const rootError = rootElements.value.find(
+        (el) => el.$type === 'bpmn:Error' && el.id === targetError.id
+      )
+      if (rootError) {
+        rootError.id = modelObjectForm.value.id
+        rootError.name = modelObjectForm.value.name
+        rootError.errorCode = modelObjectForm.value.errorCode
+      }
+    } else {
+      // 新建模式
+      if (errorIdMap.value[modelObjectForm.value.id]) {
+        message.error('该错误已存在，请修改id后重新保存')
+        return
+      }
+      const newElement = bpmnInstances().moddle.create('bpmn:Error', modelObjectForm.value)
+      rootElements.value.push(newElement)
+    }
+  } else {
+    // 编辑模式
+    if (editingIndex.value !== -1) {
+      const targetEscalation = escalationList.value[editingIndex.value]
+      // 查找 rootElements 中的原始对象
+      const rootEscalation = rootElements.value.find(
+        (el) => el.$type === 'bpmn:Escalation' && el.id === targetEscalation.id
+      )
+      if (rootEscalation) {
+        rootEscalation.id = modelObjectForm.value.id
+        rootEscalation.name = modelObjectForm.value.name
+        rootEscalation.escalationCode = modelObjectForm.value.escalationCode
+      }
+    } else {
+      // 新建模式
+      if (escalationIdMap.value[modelObjectForm.value.id]) {
+        message.error('该升级已存在，请修改id后重新保存')
+        return
+      }
+      const newElement = bpmnInstances().moddle.create('bpmn:Escalation', modelObjectForm.value)
+      rootElements.value.push(newElement)
     }
   }
-
-  const config = typeConfigs[modelType.value]
-  if (!config) return
-
-  if (config.idMap[modelObjectForm.value.id]) {
-    message.error(config.errorMsg)
-    return
-  }
-
-  const newElement = bpmnInstances().moddle.create(config.type, modelObjectForm.value)
-  rootElements.value.push(newElement)
-
   dialogVisible.value = false
   initDataList()
 }
 
-const deleteObject = (type: string, index: number) => {
-  const listMap = {
-    error: errorList.value,
-    escalation: escalationList.value
-  }
-
-  const typeMap = {
-    error: 'bpmn:Error',
-    escalation: 'bpmn:Escalation'
-  }
-
-  const list = listMap[type]
-  const bpmnType = typeMap[type]
-
-  if (!list || !bpmnType) return
-
-  const item = list[index]
-  if (!item) return
-
-  // 从 rootElements 中删除
-  const elementIndex = rootElements.value.findIndex(
-    (el) => el.$type === bpmnType && el.id === item.id
-  )
-
-  if (elementIndex > -1) {
-    rootElements.value.splice(elementIndex, 1)
-    initDataList()
-  }
+const removeObject = (type, row) => {
+  ElMessageBox.confirm(`确认移除该${type === 'error' ? '错误' : '升级'}吗？`, '提示', {
+    confirmButtonText: '确 认',
+    cancelButtonText: '取 消'
+  })
+    .then(() => {
+      // 从 rootElements 中移除
+      const targetType = type === 'error' ? 'bpmn:Error' : 'bpmn:Escalation'
+      const elementIndex = rootElements.value.findIndex(
+        (el) => el.$type === targetType && el.id === row.id
+      )
+      if (elementIndex !== -1) {
+        rootElements.value.splice(elementIndex, 1)
+      }
+      // 刷新列表
+      initDataList()
+      message.success('移除成功')
+    })
+    .catch(() => console.info('操作取消'))
 }
 
 onMounted(() => {

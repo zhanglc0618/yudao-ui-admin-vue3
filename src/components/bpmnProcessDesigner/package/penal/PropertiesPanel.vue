@@ -82,6 +82,19 @@
               :business-object="elementBusinessObject"
             />
           </el-collapse-item>
+          <!-- 条件属性配置 - 排在常规之后的第二栏 -->
+          <el-collapse-item
+            v-if="isConditionalBoundaryEvent || isConditionalIntermediateCatchEvent"
+            name="conditionalEvent"
+            key="conditionalEvent"
+          >
+            <template #title><Icon icon="ep:document" />条件事件</template>
+            <ConditionalEventConfig
+              :id="elementId"
+              :type="elementType"
+              :business-object="elementBusinessObject"
+            />
+          </el-collapse-item>
           <el-collapse-item name="condition" v-if="elementType === 'Process'" key="message">
             <template #title><Icon icon="ep:comment" />消息与信号</template>
             <signal-and-massage />
@@ -172,6 +185,7 @@ import MessageEventConfig from './message-event/MessageEventConfig.vue'
 import SignalEventConfig from './signal-event/SignalEventConfig.vue'
 import ErrorEventConfig from './error-event/ErrorEventConfig.vue'
 import EscalationEventConfig from './escalation-event/EscalationEventConfig.vue'
+import ConditionalEventConfig from './conditional-event/ConditionalEventConfig.vue'
 import { ref, watch, computed } from 'vue'
 
 defineOptions({ name: 'MyPropertiesPanel' })
@@ -285,6 +299,28 @@ const isEscalationBoundaryEvent = computed(() => {
 
   const eventDefType = eventDefinitions[0]?.$type
   return eventDefType === 'bpmn:EscalationEventDefinition'
+})
+
+// 判断是否为条件边界事件
+const isConditionalBoundaryEvent = computed(() => {
+  if (elementType.value !== 'BoundaryEvent') return false
+
+  const eventDefinitions = elementBusinessObject.value?.eventDefinitions
+  if (!eventDefinitions || eventDefinitions.length === 0) return false
+
+  const eventDefType = eventDefinitions[0]?.$type
+  return eventDefType === 'bpmn:ConditionalEventDefinition'
+})
+
+// 判断是否为条件中间捕获事件
+const isConditionalIntermediateCatchEvent = computed(() => {
+  if (elementType.value !== 'IntermediateCatchEvent') return false
+
+  const eventDefinitions = elementBusinessObject.value?.eventDefinitions
+  if (!eventDefinitions || eventDefinitions.length === 0) return false
+
+  const eventDefType = eventDefinitions[0]?.$type
+  return eventDefType === 'bpmn:ConditionalEventDefinition'
 })
 
 // 初始化 bpmnInstances

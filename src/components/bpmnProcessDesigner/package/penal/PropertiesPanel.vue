@@ -61,7 +61,7 @@
             />
           </el-collapse-item>
           <!-- 错误属性配置 - 排在常规之后的第二栏 -->
-          <el-collapse-item v-if="isErrorBoundaryEvent" name="errorEvent" key="errorEvent">
+          <el-collapse-item v-if="isErrorEvent" name="errorEvent" key="errorEvent">
             <template #title><Icon icon="ep:warning" />错误事件</template>
             <ErrorEventConfig
               :id="elementId"
@@ -71,7 +71,7 @@
           </el-collapse-item>
           <!-- 升级属性配置 - 排在常规之后的第二栏 -->
           <el-collapse-item
-            v-if="isEscalationBoundaryEvent"
+            v-if="isEscalationEvent"
             name="escalationEvent"
             key="escalationEvent"
           >
@@ -288,15 +288,19 @@ const isSignalEvent = computed(() => {
 })
 
 
-// 判断是否为错误边界事件
-const isErrorBoundaryEvent = computed(() => {
-  return hasEventDefinition(['BoundaryEvent'], 'bpmn:ErrorEventDefinition')
+// 判断是否为错误事件（支持边界事件、结束事件）
+const isErrorEvent = computed(() => {
+  return hasEventDefinition(['BoundaryEvent', 'EndEvent'], 'bpmn:ErrorEventDefinition')
 })
 
-// 判断是否为升级边界事件
-const isEscalationBoundaryEvent = computed(() => {
-  return hasEventDefinition(['BoundaryEvent'], 'bpmn:EscalationEventDefinition')
+// 判断是否为升级事件（支持边界事件、中间抛出事件、结束事件）
+const isEscalationEvent = computed(() => {
+  return hasEventDefinition(
+    ['BoundaryEvent', 'IntermediateThrowEvent', 'EndEvent'],
+    'bpmn:EscalationEventDefinition'
+  )
 })
+
 
 // 判断是否为条件边界事件
 const isConditionalBoundaryEvent = computed(() => {

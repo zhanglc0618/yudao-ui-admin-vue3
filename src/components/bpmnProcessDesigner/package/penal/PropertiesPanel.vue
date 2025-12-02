@@ -36,7 +36,7 @@
           </el-collapse-item>
           <!-- 消息属性配置 - 排在常规之后的第二栏 -->
           <el-collapse-item
-            v-if="isMessageIntermediateCatchEvent || isMessageIntermediateThrowEvent"
+            v-if="isMessageEvent"
             name="messageEvent"
             key="messageEvent"
           >
@@ -49,7 +49,7 @@
           </el-collapse-item>
           <!-- 信号属性配置 - 排在常规之后的第二栏 -->
           <el-collapse-item
-            v-if="isSignalIntermediateCatchEvent || isSignalIntermediateThrowEvent"
+            v-if="isSignalEvent"
             name="signalEvent"
             key="signalEvent"
           >
@@ -257,92 +257,55 @@ const isTimerStartEvent = computed(() => {
   return eventDefType === 'bpmn:TimerEventDefinition'
 })
 
-// 判断是否为消息中间捕获事件
-const isMessageIntermediateCatchEvent = computed(() => {
-  if (elementType.value !== 'IntermediateCatchEvent') return false
+// 通用函数：检查事件是否包含指定类型的事件定义
+const hasEventDefinition = (
+  eventTypes: string[],
+  definitionType: string
+): boolean => {
+  if (!eventTypes.includes(elementType.value)) return false
 
   const eventDefinitions = elementBusinessObject.value?.eventDefinitions
   if (!eventDefinitions || eventDefinitions.length === 0) return false
 
   const eventDefType = eventDefinitions[0]?.$type
-  return eventDefType === 'bpmn:MessageEventDefinition'
+  return eventDefType === definitionType
+}
+
+// 判断是否为消息事件（支持中间捕获、中间抛出、边界事件、开始事件、结束事件）
+const isMessageEvent = computed(() => {
+  return hasEventDefinition(
+    ['IntermediateCatchEvent', 'IntermediateThrowEvent', 'BoundaryEvent', 'StartEvent', 'EndEvent'],
+    'bpmn:MessageEventDefinition'
+  )
 })
 
-// 判断是否为消息中间抛出事件
-const isMessageIntermediateThrowEvent = computed(() => {
-  if (elementType.value !== 'IntermediateThrowEvent') return false
-
-  const eventDefinitions = elementBusinessObject.value?.eventDefinitions
-  if (!eventDefinitions || eventDefinitions.length === 0) return false
-
-  const eventDefType = eventDefinitions[0]?.$type
-  return eventDefType === 'bpmn:MessageEventDefinition'
+// 判断是否为信号事件（支持中间捕获、中间抛出、边界事件、开始事件、结束事件）
+const isSignalEvent = computed(() => {
+  return hasEventDefinition(
+    ['IntermediateCatchEvent', 'IntermediateThrowEvent', 'BoundaryEvent', 'StartEvent', 'EndEvent'],
+    'bpmn:SignalEventDefinition'
+  )
 })
 
-// 判断是否为信号中间捕获事件
-const isSignalIntermediateCatchEvent = computed(() => {
-  if (elementType.value !== 'IntermediateCatchEvent') return false
-
-  const eventDefinitions = elementBusinessObject.value?.eventDefinitions
-  if (!eventDefinitions || eventDefinitions.length === 0) return false
-
-  const eventDefType = eventDefinitions[0]?.$type
-  return eventDefType === 'bpmn:SignalEventDefinition'
-})
-
-// 判断是否为信号中间抛出事件
-const isSignalIntermediateThrowEvent = computed(() => {
-  if (elementType.value !== 'IntermediateThrowEvent') return false
-
-  const eventDefinitions = elementBusinessObject.value?.eventDefinitions
-  if (!eventDefinitions || eventDefinitions.length === 0) return false
-
-  const eventDefType = eventDefinitions[0]?.$type
-  return eventDefType === 'bpmn:SignalEventDefinition'
-})
 
 // 判断是否为错误边界事件
 const isErrorBoundaryEvent = computed(() => {
-  if (elementType.value !== 'BoundaryEvent') return false
-
-  const eventDefinitions = elementBusinessObject.value?.eventDefinitions
-  if (!eventDefinitions || eventDefinitions.length === 0) return false
-
-  const eventDefType = eventDefinitions[0]?.$type
-  return eventDefType === 'bpmn:ErrorEventDefinition'
+  return hasEventDefinition(['BoundaryEvent'], 'bpmn:ErrorEventDefinition')
 })
 
 // 判断是否为升级边界事件
 const isEscalationBoundaryEvent = computed(() => {
-  if (elementType.value !== 'BoundaryEvent') return false
-
-  const eventDefinitions = elementBusinessObject.value?.eventDefinitions
-  if (!eventDefinitions || eventDefinitions.length === 0) return false
-
-  const eventDefType = eventDefinitions[0]?.$type
-  return eventDefType === 'bpmn:EscalationEventDefinition'
+  return hasEventDefinition(['BoundaryEvent'], 'bpmn:EscalationEventDefinition')
 })
 
 // 判断是否为条件边界事件
 const isConditionalBoundaryEvent = computed(() => {
-  if (elementType.value !== 'BoundaryEvent') return false
-
-  const eventDefinitions = elementBusinessObject.value?.eventDefinitions
-  if (!eventDefinitions || eventDefinitions.length === 0) return false
-
-  const eventDefType = eventDefinitions[0]?.$type
-  return eventDefType === 'bpmn:ConditionalEventDefinition'
+  return hasEventDefinition(['BoundaryEvent'], 'bpmn:ConditionalEventDefinition')
 })
 
 // 判断是否为条件中间捕获事件
 const isConditionalIntermediateCatchEvent = computed(() => {
-  if (elementType.value !== 'IntermediateCatchEvent') return false
-
-  const eventDefinitions = elementBusinessObject.value?.eventDefinitions
-  if (!eventDefinitions || eventDefinitions.length === 0) return false
-
-  const eventDefType = eventDefinitions[0]?.$type
-  return eventDefType === 'bpmn:ConditionalEventDefinition'
+  return hasEventDefinition(['IntermediateCatchEvent'], 'bpmn:ConditionalEventDefinition')
 })
 
 // 初始化 bpmnInstances

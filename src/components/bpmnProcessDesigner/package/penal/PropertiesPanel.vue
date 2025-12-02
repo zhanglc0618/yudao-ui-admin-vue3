@@ -36,7 +36,7 @@
           </el-collapse-item>
           <!-- 消息属性配置 - 排在常规之后的第二栏 -->
           <el-collapse-item
-            v-if="isMessageIntermediateCatchEvent"
+            v-if="isMessageIntermediateCatchEvent || isMessageIntermediateThrowEvent"
             name="messageEvent"
             key="messageEvent"
           >
@@ -49,7 +49,7 @@
           </el-collapse-item>
           <!-- 信号属性配置 - 排在常规之后的第二栏 -->
           <el-collapse-item
-            v-if="isSignalIntermediateCatchEvent"
+            v-if="isSignalIntermediateCatchEvent || isSignalIntermediateThrowEvent"
             name="signalEvent"
             key="signalEvent"
           >
@@ -268,9 +268,31 @@ const isMessageIntermediateCatchEvent = computed(() => {
   return eventDefType === 'bpmn:MessageEventDefinition'
 })
 
+// 判断是否为消息中间抛出事件
+const isMessageIntermediateThrowEvent = computed(() => {
+  if (elementType.value !== 'IntermediateThrowEvent') return false
+
+  const eventDefinitions = elementBusinessObject.value?.eventDefinitions
+  if (!eventDefinitions || eventDefinitions.length === 0) return false
+
+  const eventDefType = eventDefinitions[0]?.$type
+  return eventDefType === 'bpmn:MessageEventDefinition'
+})
+
 // 判断是否为信号中间捕获事件
 const isSignalIntermediateCatchEvent = computed(() => {
   if (elementType.value !== 'IntermediateCatchEvent') return false
+
+  const eventDefinitions = elementBusinessObject.value?.eventDefinitions
+  if (!eventDefinitions || eventDefinitions.length === 0) return false
+
+  const eventDefType = eventDefinitions[0]?.$type
+  return eventDefType === 'bpmn:SignalEventDefinition'
+})
+
+// 判断是否为信号中间抛出事件
+const isSignalIntermediateThrowEvent = computed(() => {
+  if (elementType.value !== 'IntermediateThrowEvent') return false
 
   const eventDefinitions = elementBusinessObject.value?.eventDefinitions
   if (!eventDefinitions || eventDefinitions.length === 0) return false

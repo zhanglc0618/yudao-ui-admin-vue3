@@ -106,7 +106,6 @@
 
 <script lang="ts" setup>
 import { ElMessageBox } from 'element-plus'
-import { emitCommandStackChanged } from '../utils/modeler'
 defineOptions({ name: 'EscalationAndError' })
 
 const message = useMessage()
@@ -234,7 +233,6 @@ const addNewObject = () => {
   }
   dialogVisible.value = false
   initDataList()
-  emitCommandStackChanged('escalation-error.update')
 }
 
 const removeObject = (type, row) => {
@@ -254,7 +252,6 @@ const removeObject = (type, row) => {
       // 刷新列表
       initDataList()
       message.success('移除成功')
-      emitCommandStackChanged('escalation-error.remove')
     })
     .catch(() => console.info('操作取消'))
 }

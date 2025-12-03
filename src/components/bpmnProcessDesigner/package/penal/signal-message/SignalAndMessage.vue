@@ -80,7 +80,6 @@
 </template>
 <script lang="ts" setup>
 import { ElMessageBox } from 'element-plus'
-import { emitCommandStackChanged, getBpmnModeler } from '../utils/modeler'
 defineOptions({ name: 'SignalAndMassage' })
 
 const message = useMessage()
@@ -153,68 +152,52 @@ const openEditModel = (type, row, index) => {
   modelObjectForm.value = { ...row }
   dialogVisible.value = true
 }
-const replaceRootElement = (typeKey: 'message' | 'signal', originalId: string, payload: any) => {
-  const modeler = getBpmnModeler()
-  if (!modeler) return
-  const moddle = modeler.get('moddle')
-  const modeling = modeler.get('modeling')
-  const definitions = modeler.getDefinitions()
-  const targetType = typeKey === 'message' ? 'bpmn:Message' : 'bpmn:Signal'
-  const entries = definitions.rootElements.filter((el) => el.$type === targetType)
-  const target = entries.find((el) => el.id === originalId)
-  if (target) {
-    modeling.updateModdleProperties({ businessObject: target }, target, payload)
-  } else {
-    const newElement = moddle.create(targetType, payload)
-    definitions.rootElements.push(newElement)
-  }
-}
-
-const deleteRootElement = (typeKey: 'message' | 'signal', id: string) => {
-  const modeler = getBpmnModeler()
-  if (!modeler) return
-  const modeling = modeler.get('modeling')
-  const definitions = modeler.getDefinitions()
-  const targetType = typeKey === 'message' ? 'bpmn:Message' : 'bpmn:Signal'
-  const target = definitions.rootElements.find((el) => el.$type === targetType && el.id === id)
-  if (target) {
-    modeling.updateModdleProperties({ businessObject: definitions }, definitions, {
-      rootElements: definitions.rootElements.filter((el) => el !== target)
-    })
-  }
-}
-
 const addNewObject = () => {
   if (modelType.value === 'message') {
+    // 编辑模式
     if (editingIndex.value !== -1) {
-      replaceRootElement('message', messageList.value[editingIndex.value].id, {
-        id: modelObjectForm.value.id,
-        name: modelObjectForm.value.name
-      })
+      const targetMessage = messageList.value[editingIndex.value]
+      // 查找 rootElements 中的原始对象
+      const rootMessage = rootElements.value.find(
+        (el) => el.$type === 'bpmn:Message' && el.id === targetMessage.id
+      )
+      if (rootMessage) {
+        rootMessage.id = modelObjectForm.value.id
+        rootMessage.name = modelObjectForm.value.name
+      }
     } else {
+      // 新建模式
       if (messageIdMap.value[modelObjectForm.value.id]) {
         message.error('该消息已存在，请修改id后重新保存')
         return
       }
-      replaceRootElement('message', modelObjectForm.value.id, { ...modelObjectForm.value })
+      const messageRef = bpmnInstances().moddle.create('bpmn:Message', modelObjectForm.value)
+      rootElements.value.push(messageRef)
     }
   } else {
+    // 编辑模式
     if (editingIndex.value !== -1) {
-      replaceRootElement('signal', signalList.value[editingIndex.value].id, {
-        id: modelObjectForm.value.id,
-        name: modelObjectForm.value.name
-      })
+      const targetSignal = signalList.value[editingIndex.value]
+      // 查找 rootElements 中的原始对象
+      const rootSignal = rootElements.value.find(
+        (el) => el.$type === 'bpmn:Signal' && el.id === targetSignal.id
+      )
+      if (rootSignal) {
+        rootSignal.id = modelObjectForm.value.id
+        rootSignal.name = modelObjectForm.value.name
+      }
     } else {
+      // 新建模式
       if (signalIdMap.value[modelObjectForm.value.id]) {
         message.error('该信号已存在，请修改id后重新保存')
         return
       }
-      replaceRootElement('signal', modelObjectForm.value.id, { ...modelObjectForm.value })
+      const signalRef = bpmnInstances().moddle.create('bpmn:Signal', modelObjectForm.value)
+      rootElements.value.push(signalRef)
     }
   }
   dialogVisible.value = false
   initDataList()
-  emitCommandStackChanged('signal-message.update')
 }
 
 const removeObject = (type, row) => {
@@ -223,10 +206,17 @@ const removeObject = (type, row) => {
     cancelButtonText: '取 消'
   })
     .then(() => {
-      deleteRootElement(type, row.id)
+      // 从 rootElements 中移除
+      const targetType = type === 'message' ? 'bpmn:Message' : 'bpmn:Signal'
+      const elementIndex = rootElements.value.findIndex(
+        (el) => el.$type === targetType && el.id === row.id
+      )
+      if (elementIndex !== -1) {
+        rootElements.value.splice(elementIndex, 1)
+      }
+      // 刷新列表
       initDataList()
       message.success('移除成功')
-      emitCommandStackChanged('signal-message.remove')
     })
     .catch(() => console.info('操作取消'))
 }

@@ -26,8 +26,6 @@
 defineOptions({ name: 'SignalEventConfig' })
 
 const props = defineProps({
-  id: String,
-  type: String,
   businessObject: {
     type: Object,
     default: () => ({})
@@ -36,10 +34,8 @@ const props = defineProps({
 
 const bindSignalId = ref('')
 const signalMap = ref<any>({})
-const bpmnElement = ref<any>()
 const bpmnSignalRefsMap = ref<any>()
-const bpmnRootElements = ref<any>()
-const isUpdating = ref(false) // 添加更新标志位
+const lastBusinessObjectId = ref('') // 记录上次的 businessObject id
 
 const showEmptyTip = computed(() => {
   return Object.keys(signalMap.value).length === 1 // 只有"无"选项
@@ -47,16 +43,51 @@ const showEmptyTip = computed(() => {
 
 const bpmnInstances = () => (window as any).bpmnInstances
 
-const getBindSignal = () => {
-  // 如果正在更新，跳过获取，避免干扰下拉框
-  if (isUpdating.value) return
-
+// 从 businessObject 同步信号列表
+const syncSignalList = () => {
   const instances = bpmnInstances()
-  if (!instances || !instances.bpmnElement) return
+  if (!instances || !instances.modeler) {
+    return
+  }
 
-  bpmnElement.value = instances.bpmnElement
+  bpmnSignalRefsMap.value = Object.create(null)
+  const rootElements = instances.modeler.getDefinitions().rootElements
+
+  // 重置信号列表，先添加"无"选项
+  signalMap.value = { '-1': '无' }
+
+  // 获取所有信号
+  rootElements
+    .filter((el) => el.$type === 'bpmn:Signal')
+    .forEach((s) => {
+      bpmnSignalRefsMap.value[s.id] = s
+      signalMap.value[s.id] = s.name
+    })
+}
+
+// 从 businessObject 同步绑定的信号（不重新加载信号列表）
+const syncBindSignal = () => {
+  const instances = bpmnInstances()
+  if (!instances || !instances.elementRegistry) {
+    bindSignalId.value = '-1'
+    return
+  }
+
+  const bo: any = props.businessObject
+  if (!bo || !bo.id) {
+    bindSignalId.value = '-1'
+    return
+  }
+
+  // 从 elementRegistry 获取最新的 element，而不是使用 props.businessObject（它是快照）
+  const element = instances.elementRegistry.get(bo.id)
+  if (!element || !element.businessObject) {
+    bindSignalId.value = '-1'
+    return
+  }
+
   // 获取事件定义中的信号引用
-  const eventDefinitions = bpmnElement.value.businessObject?.eventDefinitions
+  const eventDefinitions = element.businessObject.eventDefinitions
   if (eventDefinitions && eventDefinitions.length > 0) {
     const signalEventDef = eventDefinitions[0]
     bindSignalId.value = signalEventDef?.signalRef?.id || '-1'
@@ -65,74 +96,79 @@ const getBindSignal = () => {
   }
 }
 
-const updateEventSignal = (signalId) => {
-  // 设置更新标志，防止 getBindSignal 干扰
-  isUpdating.value = true
-
-  nextTick(() => {
-    try {
-      const eventDefinitions = bpmnElement.value?.businessObject?.eventDefinitions
-      if (!eventDefinitions || eventDefinitions.length === 0) {
-        isUpdating.value = false
-        return
-      }
-
-      const signalEventDef = eventDefinitions[0]
-
-      if (signalId === '-1') {
-        // 清空信号引用
-        bpmnInstances().modeling.updateModdleProperties(bpmnElement.value, signalEventDef, {
-          signalRef: null
-        })
-      } else {
-        // 设置信号引用
-        bpmnInstances().modeling.updateModdleProperties(bpmnElement.value, signalEventDef, {
-          signalRef: bpmnSignalRefsMap.value[signalId]
-        })
-      }
-    } catch (error) {
-      console.error('更新信号引用失败:', error)
-    } finally {
-      // 延迟重置标志位，确保事件处理完成
-      setTimeout(() => {
-        isUpdating.value = false
-      }, 100)
-    }
-  })
-}
-
-onMounted(() => {
+// 完整同步：信号列表 + 绑定的信号
+const syncFromBusinessObject = () => {
   const instances = bpmnInstances()
-  if (!instances || !instances.modeler) {
-    console.error('BPMN实例未初始化')
+  if (!instances) return
+
+  // 同步信号列表
+  syncSignalList()
+
+  if (!props.businessObject) {
+    bindSignalId.value = '-1'
+    lastBusinessObjectId.value = ''
     return
   }
 
-  bpmnSignalRefsMap.value = Object.create(null)
-  bpmnRootElements.value = instances.modeler.getDefinitions().rootElements
+  // 记录当前的 businessObject id
+  lastBusinessObjectId.value = props.businessObject.id || ''
 
-  // 先添加"无"选项
-  signalMap.value['-1'] = '无'
+  // 同步绑定的信号
+  syncBindSignal()
+}
 
-  // 获取所有信号
-  bpmnRootElements.value
-    .filter((el) => el.$type === 'bpmn:Signal')
-    .forEach((s) => {
-      bpmnSignalRefsMap.value[s.id] = s
-      signalMap.value[s.id] = s.name
+const updateEventSignal = (signalId) => {
+  const instances = bpmnInstances()
+  if (!instances) return
+
+  const { modeling, elementRegistry } = instances
+  if (!modeling || !elementRegistry) return
+
+  const bo: any = props.businessObject
+  if (!bo || !bo.id) return
+
+  const element = elementRegistry.get(bo.id)
+  if (!element) return
+
+  const eventDefinitions = element.businessObject?.eventDefinitions
+  if (!eventDefinitions || eventDefinitions.length === 0) {
+    return
+  }
+
+  const signalEventDef = eventDefinitions[0]
+
+  if (signalId === '-1') {
+    // 清空信号引用
+    modeling.updateModdleProperties(element, signalEventDef, {
+      signalRef: null
     })
-})
+  } else {
+    // 设置信号引用
+    modeling.updateModdleProperties(element, signalEventDef, {
+      signalRef: bpmnSignalRefsMap.value[signalId]
+    })
+  }
+}
 
-onBeforeUnmount(() => {
-  bpmnElement.value = null
+onMounted(() => {
+  syncFromBusinessObject()
 })
 
 watch(
-  () => props.id,
-  () => {
-    nextTick(() => {
-      getBindSignal()
-    })
+  () => props.businessObject,
+  (val) => {
+    if (val) {
+      // 只在 businessObject 的 id 发生变化时才重新同步
+      const currentId = val.id || ''
+      if (currentId !== lastBusinessObjectId.value) {
+        nextTick(() => {
+          syncFromBusinessObject()
+        })
+      } else {
+        // 同一个元素，只更新信号列表（处理信号增删改的情况）
+        syncSignalList()
+      }
+    }
   },
   { immediate: true }
 )

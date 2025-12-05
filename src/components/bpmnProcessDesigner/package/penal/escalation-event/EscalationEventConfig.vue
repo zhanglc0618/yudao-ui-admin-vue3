@@ -26,8 +26,6 @@
 defineOptions({ name: 'EscalationEventConfig' })
 
 const props = defineProps({
-  id: String,
-  type: String,
   businessObject: {
     type: Object,
     default: () => ({})
@@ -36,10 +34,8 @@ const props = defineProps({
 
 const bindEscalationId = ref('')
 const escalationMap = ref<any>({})
-const bpmnElement = ref<any>()
 const bpmnEscalationRefsMap = ref<any>()
-const bpmnRootElements = ref<any>()
-const isUpdating = ref(false) // 添加更新标志位
+const lastBusinessObjectId = ref('') // 记录上次的 businessObject id
 
 const showEmptyTip = computed(() => {
   return Object.keys(escalationMap.value).length === 1 // 只有"无"选项
@@ -47,16 +43,51 @@ const showEmptyTip = computed(() => {
 
 const bpmnInstances = () => (window as any).bpmnInstances
 
-const getBindEscalation = () => {
-  // 如果正在更新，跳过获取，避免干扰下拉框
-  if (isUpdating.value) return
-
+// 从 businessObject 同步升级列表
+const syncEscalationList = () => {
   const instances = bpmnInstances()
-  if (!instances || !instances.bpmnElement) return
+  if (!instances || !instances.modeler) {
+    return
+  }
 
-  bpmnElement.value = instances.bpmnElement
+  bpmnEscalationRefsMap.value = Object.create(null)
+  const rootElements = instances.modeler.getDefinitions().rootElements
+
+  // 重置升级列表，先添加"无"选项
+  escalationMap.value = { '-1': '无' }
+
+  // 获取所有升级
+  rootElements
+    .filter((el) => el.$type === 'bpmn:Escalation')
+    .forEach((e) => {
+      bpmnEscalationRefsMap.value[e.id] = e
+      escalationMap.value[e.id] = e.name
+    })
+}
+
+// 从 businessObject 同步绑定的升级（不重新加载升级列表）
+const syncBindEscalation = () => {
+  const instances = bpmnInstances()
+  if (!instances || !instances.elementRegistry) {
+    bindEscalationId.value = '-1'
+    return
+  }
+
+  const bo: any = props.businessObject
+  if (!bo || !bo.id) {
+    bindEscalationId.value = '-1'
+    return
+  }
+
+  // 从 elementRegistry 获取最新的 element，而不是使用 props.businessObject（它是快照）
+  const element = instances.elementRegistry.get(bo.id)
+  if (!element || !element.businessObject) {
+    bindEscalationId.value = '-1'
+    return
+  }
+
   // 获取事件定义中的升级引用
-  const eventDefinitions = bpmnElement.value.businessObject?.eventDefinitions
+  const eventDefinitions = element.businessObject.eventDefinitions
   if (eventDefinitions && eventDefinitions.length > 0) {
     const escalationEventDef = eventDefinitions[0]
     bindEscalationId.value = escalationEventDef?.escalationRef?.id || '-1'
@@ -65,74 +96,79 @@ const getBindEscalation = () => {
   }
 }
 
-const updateEventEscalation = (escalationId) => {
-  // 设置更新标志，防止 getBindEscalation 干扰
-  isUpdating.value = true
-
-  nextTick(() => {
-    try {
-      const eventDefinitions = bpmnElement.value?.businessObject?.eventDefinitions
-      if (!eventDefinitions || eventDefinitions.length === 0) {
-        isUpdating.value = false
-        return
-      }
-
-      const escalationEventDef = eventDefinitions[0]
-
-      if (escalationId === '-1') {
-        // 清空升级引用
-        bpmnInstances().modeling.updateModdleProperties(bpmnElement.value, escalationEventDef, {
-          escalationRef: null
-        })
-      } else {
-        // 设置升级引用
-        bpmnInstances().modeling.updateModdleProperties(bpmnElement.value, escalationEventDef, {
-          escalationRef: bpmnEscalationRefsMap.value[escalationId]
-        })
-      }
-    } catch (error) {
-      console.error('更新升级引用失败:', error)
-    } finally {
-      // 延迟重置标志位，确保事件处理完成
-      setTimeout(() => {
-        isUpdating.value = false
-      }, 100)
-    }
-  })
-}
-
-onMounted(() => {
+// 完整同步：升级列表 + 绑定的升级
+const syncFromBusinessObject = () => {
   const instances = bpmnInstances()
-  if (!instances || !instances.modeler) {
-    console.error('BPMN实例未初始化')
+  if (!instances) return
+
+  // 同步升级列表
+  syncEscalationList()
+
+  if (!props.businessObject) {
+    bindEscalationId.value = '-1'
+    lastBusinessObjectId.value = ''
     return
   }
 
-  bpmnEscalationRefsMap.value = Object.create(null)
-  bpmnRootElements.value = instances.modeler.getDefinitions().rootElements
+  // 记录当前的 businessObject id
+  lastBusinessObjectId.value = props.businessObject.id || ''
 
-  // 先添加"无"选项
-  escalationMap.value['-1'] = '无'
+  // 同步绑定的升级
+  syncBindEscalation()
+}
 
-  // 获取所有升级
-  bpmnRootElements.value
-    .filter((el) => el.$type === 'bpmn:Escalation')
-    .forEach((m) => {
-      bpmnEscalationRefsMap.value[m.id] = m
-      escalationMap.value[m.id] = m.name
+const updateEventEscalation = (escalationId) => {
+  const instances = bpmnInstances()
+  if (!instances) return
+
+  const { modeling, elementRegistry } = instances
+  if (!modeling || !elementRegistry) return
+
+  const bo: any = props.businessObject
+  if (!bo || !bo.id) return
+
+  const element = elementRegistry.get(bo.id)
+  if (!element) return
+
+  const eventDefinitions = element.businessObject?.eventDefinitions
+  if (!eventDefinitions || eventDefinitions.length === 0) {
+    return
+  }
+
+  const escalationEventDef = eventDefinitions[0]
+
+  if (escalationId === '-1') {
+    // 清空升级引用
+    modeling.updateModdleProperties(element, escalationEventDef, {
+      escalationRef: null
     })
-})
+  } else {
+    // 设置升级引用
+    modeling.updateModdleProperties(element, escalationEventDef, {
+      escalationRef: bpmnEscalationRefsMap.value[escalationId]
+    })
+  }
+}
 
-onBeforeUnmount(() => {
-  bpmnElement.value = null
+onMounted(() => {
+  syncFromBusinessObject()
 })
 
 watch(
-  () => props.id,
-  () => {
-    nextTick(() => {
-      getBindEscalation()
-    })
+  () => props.businessObject,
+  (val) => {
+    if (val) {
+      // 只在 businessObject 的 id 发生变化时才重新同步
+      const currentId = val.id || ''
+      if (currentId !== lastBusinessObjectId.value) {
+        nextTick(() => {
+          syncFromBusinessObject()
+        })
+      } else {
+        // 同一个元素，只更新升级列表（处理升级增删改的情况）
+        syncEscalationList()
+      }
+    }
   },
   { immediate: true }
 )

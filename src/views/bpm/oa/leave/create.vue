@@ -192,9 +192,9 @@ const daysDifference = () => {
 }
 
 /** 获取请假数据，用于重新发起时自动填充 */
-const getLeaveData = async (oldId: number) => {
+const getLeaveData = async (id: number) => {
   formLoading.value = true
-  const data = await LeaveApi.getLeave(oldId)
+  const data = await LeaveApi.getLeave(id)
   if (!data) {
     message.error('重新发起请假失败，原因：请假数据不存在')
     return
@@ -224,8 +224,8 @@ onMounted(async () => {
   startUserSelectTasks.value = processDefinitionDetail.startUserSelectTasks
 
   // 如果有业务编号，说明是重新发起，需要加载原有数据
-  if (query.oldId) {
-    await getLeaveData(Number(query.oldId))
+  if (query.id) {
+    await getLeaveData(Number(query.id))
   }
 
   // 审批相关：加载最新的审批详情，主要用于节点预测

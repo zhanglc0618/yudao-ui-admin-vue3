@@ -284,7 +284,7 @@ const handleCreate = async (row?: ProcessInstanceVO) => {
       await router.push({
         path: processDefinitionDetail.formCustomCreatePath,
         query: {
-          oldId: row.businessKey
+          id: row.businessKey
         }
       })
     } else if (processDefinitionDetail.formType === 10) {
